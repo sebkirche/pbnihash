@@ -1,0 +1,6 @@
+Save Format v3.0(19990112)
+@begin Targets
+ 0 "hashdemo.pbt";
+@end;
+DefaultTarget "hashdemo.pbt";
+DefaultRemoteTarget "hashdemo.pbt";
