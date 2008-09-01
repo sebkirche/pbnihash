@@ -1,0 +1,204 @@
+In  general, what you want to do is:
+1. ci->pArgs->GetAt(0) returns an IPB_Value. You need to call GetObject() on
+that to get a pbobject.
+2. Call IPB_Session::GetClass(pbobject) -- this will give you a pbclass
+3. Call IPB_Session::GetMethodID(pbclass...) passing the DataWindow method you
+wish to call
+4. Call IPB_Session::InitCallInfo(pbclass, pbmethodID, ...)
+5. Call IPB_Session::InvokeObjectFunction(pbobject, pbmethodID, ...)
+6. Call IPB_Session::FreeCallInfo 
+
+
+
+
+
+
+
+
+#include  <windows.h>
+#include "PBext.h"
+typedef       PBXEXPORT       PBXRESULT       (*P_PB_GetVM)(IPB_VM**       vm); 
+
+extern "C" __declspec(dllexport) long ufc_function();
+long ufc_function()
+{
+
+HINSTANCE hinst = LoadLibrary("PBvm90.dll");
+if (hinst) return 0;
+P_PB_GetVM getvm = (P_PB_GetVM)GetProcAddress(hinst,"PB_GetVM");
+    if(getvm) return -1;
+IPB_VM* VM = NULL;
+getvm(&VM);
+if(VM) return -2;
+IPB_Session*   session   =   NULL; 
+    static   const   char   *liblist[]   =   {   "lfunctions.PBd"   }; 
+    VM->CreateSession("lfunctions",liblist,1,&session);
+pbgroup group = session->FindGroup("my_function",PBgroup_function);
+     if(group) return -4;
+PBclass pcls = session->FindClass(group,"my_function");
+    if (pcls) return -5;
+PBCallInfo ci;
+pbmethodID mid = session->GetMethodID(pcls,"my_function",PBRT_FUNCTION,"ASS");
+    if (mid) return -6;
+session->InITCallInfo(pcls,mid,&ci);
+    ci.pArgs->   GetAt(0)->SetString("w_temp");   
+    ci.pArgs->   GetAt(1)->SetString("w_temp");   
+ 
+  session->InvokeClassFunction(pcls,mid,&ci);
+  session->HASExceptionThrown();
+  session->ClearException();
+   PBobject ret = ci.returnValue->GetObject();
+session->FreeCallInfo(&ci);
+
+session->ReleASE();
+FreeLibrary(hinst);
+delete &ci;
+delete &session;
+delete &VM;
+
+return 1;
+}
+int main(int argc,char *argv[])
+{
+ufc_function();
+return 1;
+}  
+
+#include "stdafx.h"
+#include "PBdllteset.h"
+#include "PBext.h" 
+
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
+typedef PBXEXPORT PBXRESULT (*P_PB_GetVM)(IPB_VM** vm);
+
+ LPCTSTR PASCAL PBdll( char* x )
+{
+PBCallInfo ci; 
+IPB_Session* session;
+IPB_VM* PBvm = NULL;
+HINSTANCE hinst;
+P_
+
+PB_GetVM getvm;
+PBgroup group;
+PBclass cls;
+PBmethodID mid ;
+pbobject PBobj;
+LPCTSTR ret;
+pbstring lPBs;
+    hinst = LoadLibrary("PBvm105.dll");
+    if ( hinst== NULL) return 0;
+    
+    getvm = (P_PB_GetVM)GetProcAddress(hinst,"PB_GetVM");
+    if (getvm == NULL) return 0;
+    
+    getvm(&PBvm);
+    if (PBvm == NULL) return 0;
+    
+LPCTSTR LibList[] = {"pb91.PBl"}; 
+    if ( pbvm->CreateSession("pb91", LibList, 1,  &session) != PBX_OK )
+    {
+    &n
+bsp;   return 0 ;
+    }
+ 
+PBSessionOwner sessionower(session);
+    
+group = session->FindGroup("n_c1",PBgroup_userobject);
+    if (group == NULL) return 0;
+  
+    cls = session->FindClass(group,"n_c1");
+    if (cls == NULL) return 0 ;
+    
+mid = session->GetMethodID(cls, "of_get", PBRT_FUNCTION, "SS");
+
+PBobj = session->NewObject(cls);
+   
+session->InITCallInfo(cls, mid, &ci);
+
+ci.pArgs-> GetAt(0)->SetPBString(session->NewString(x));
+
+session->InvokeObjectFunction(PBobj, mid, &ci);
+    lPBs = ci.returnValue->GetString();
+ret = session->GetString(lPBs);
+return ret;
+}
+
+  
+#include  <windows.h>
+#include "PBext.h"
+typedef       PBXEXPORT       PBXRESULT       (*P_PB_GetVM)(IPB_VM**       vm); 
+//extern "C" __declspec(dllexport) long ufc_function();
+PBlong PASCAL ufc_function()
+{
+
+HINSTANCE hinst = LoadLibrary("C:\Program Files\pb9.0\Shared\PowerBuilder\PBvm90.dll");
+if (hinst) return -1;
+
+P_PB_GetVM getvm = (P_PB_GetVM)GetProcAddress(hinst,"PB_GetVM");
+
+if(getvm) return -1;
+IPB_VM* VM = NULL;
+
+
+getvm(&VM);
+/*
+??????????,???????,??????????
+Loaded 'ntdll.dll
+9;, no matching symbolic information found.
+Loaded 'C:\WINDOWS\system32\kernel32.dll', no matching symbolic information found.
+First-chance exception in Cpp1.exe: 0xC0000005: Access Violation.
+The program 'F:\dgp_picture\Debug\Cpp1.exe' has exited wITh code 0 (0x0).
+    */
+
+return -1;
+if(VM) return -2;
+IPB_Session*   session   =   NULL; 
+
+static   const   char   *liblist[]   =   {   "lfunctions.PBd"   }; 
+    
+VM->CreateSession("lfunctions",liblist,1,&session);
+
+    
+pbgroup group = session->FindGroup("my_function",PBgroup_function);
+
+   // if(group) return -4;
+PBclass pcls = session->FindClass(group,"my_function");
+
+//if (pcls) return -5;
+PBCallInfo ci;
+pbmethodID mid = session->GetMethodID(pcls,"my_function",
+PBRT_FUNCTION,"ASS");
+
+    //if (mid) return -6;
+session->InITCallInfo(pcls,mid,&ci);
+
+   ci.pArgs->   GetAt(0)->SetString("w_temp");   
+    ci.pArgs->   GetAt(1)->SetString("w_temp");   
+ 
+  session->InvokeClassFunction(pcls,mid,&ci);
+  session->HASExceptionThrown();
+  session->ClearException();
+ 
+PBobject ret = ci.returnValue->GetObject();
+session->FreeCallInfo(&ci);
+session->ReleASE();
+FreeLibrary(hinst);
+
+
+return 1;
+}
+int main(int argc,char *argv[])
+{
+ufc_function();
+return 1;
+}
+
+  
+
