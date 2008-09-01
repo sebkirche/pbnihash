@@ -10,9 +10,8 @@ PbniHashStr::PbniHashStr()
 PbniHashStr::PbniHashStr( IPB_Session * pSession )
 :m_pSession( pSession )
 {
-	int iRet = hi_init_str(&m_hi_handle, TABLE_STR_SIZE);
-	if (HI_ERR_SUCCESS != iRet)
-		exit(-1);
+	if (HI_ERR_SUCCESS != hi_init_str(&m_hi_handle, TABLE_STR_SIZE))
+		exit(-1); //todo: how to return a constructor problem ?
 }
 
 // destructor
@@ -39,6 +38,12 @@ PBXRESULT PbniHashStr::Invoke
 			break;
 		case mid_Add:
 			pbxr = this->Add(ci);
+			break;
+		case mid_Get:
+			pbxr = this->Get(ci);
+			break;
+		case mid_Remove:
+			pbxr = this->Remove(ci);
 			break;
 		default:
 			pbxr = PBX_E_INVOKE_METHOD_AMBIGUOUS;
@@ -87,15 +92,81 @@ PBXRESULT PbniHashStr::Add( PBCallInfo * ci )
 		LPSTR ansiKey = (LPSTR)malloc(iKeyLen);				//ne pas oublier le free à la fermeture
 		wcstombs(ansiKey, (LPWSTR)(LPWSTR)tszKey, iKeyLen);
 
+/*
 		//alloc a copy for the string 
 		int iDataLen = (wcslen(tszData) + 1) * sizeof(WCHAR);
 		void * memdata = malloc(iDataLen);				//ne pas oublier le free à la fermeture
 		memcpy(memdata, tszData, iDataLen);
-
-		if (HI_ERR_SUCCESS != hi_insert_str(m_hi_handle, ansiKey, memdata))
+*/
+		if (HI_ERR_SUCCESS == hi_insert_str(m_hi_handle, ansiKey, /*mem*/tszData))
+			ci->returnValue->SetBool(true);
+		else
 			ci->returnValue->SetBool(false);
 	}
 
+	return pbxr;
+}
+
+PBXRESULT PbniHashStr::Get(PBCallInfo *ci)
+{
+	PBXRESULT	pbxr = PBX_OK;
+	int iRet;
+	void *data_ptr;
+
+	if ( ci->pArgs->GetAt(0)->IsNull())
+	{
+		// if any of the passed arguments is null, return the null value
+		ci->returnValue->SetToNull();
+	}
+	else
+	{
+		pbstring key = ci->pArgs->GetAt(0)->GetString();
+		LPCTSTR tszKey = m_pSession->GetString(key);
+
+		//convert the key into ansi
+		int iKeyLen = wcstombs(NULL, (LPWSTR)tszKey, 0) + 1;
+		LPSTR ansiKey = (LPSTR)malloc(iKeyLen);
+		wcstombs(ansiKey, (LPWSTR)(LPWSTR)tszKey, iKeyLen);		
+		
+		//search the key
+		iRet = hi_get_str(m_hi_handle, ansiKey, (void**)&data_ptr);
+		if (HI_ERR_SUCCESS == iRet)
+			ci->returnValue->SetString((LPCWSTR)data_ptr);
+		else
+			ci->returnValue->SetToNull();
+	}
+	return pbxr;
+}
+
+PBXRESULT PbniHashStr::Remove(PBCallInfo *ci)
+{
+	PBXRESULT	pbxr = PBX_OK;
+	int iRet;
+	void *data_ptr;
+
+	if ( ci->pArgs->GetAt(0)->IsNull())
+	{
+		// if any of the passed arguments is null, return the null value
+		ci->returnValue->SetToNull();
+	}
+	else
+	{
+		pbstring key = ci->pArgs->GetAt(0)->GetString();
+		LPCTSTR tszKey = m_pSession->GetString(key);
+
+		//convert the key into ansi
+		int iKeyLen = wcstombs(NULL, (LPWSTR)tszKey, 0) + 1;
+		LPSTR ansiKey = (LPSTR)malloc(iKeyLen);
+		wcstombs(ansiKey, (LPWSTR)(LPWSTR)tszKey, iKeyLen);		
+		
+		//search the key
+		iRet = hi_remove_str(m_hi_handle, ansiKey, (void**)&data_ptr);
+		if (HI_ERR_SUCCESS == iRet)
+			//ci->returnValue->SetString((LPCWSTR)data_ptr);
+			ci->returnValue->SetBool(true);
+		else
+			ci->returnValue->SetBool(false);
+	}
 	return pbxr;
 }
 

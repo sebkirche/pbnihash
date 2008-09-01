@@ -37,6 +37,8 @@ public:
 	{
 		mid_Hello = 0,
 		mid_Add,
+		mid_Get,
+		mid_Remove,
 		NO_MORE_METHODS
 	};
 
@@ -45,6 +47,8 @@ protected:
  	// methods callable from PowerBuilder
 	PBXRESULT Hello(PBCallInfo * ci);
 	PBXRESULT Add(PBCallInfo * ci);
+	PBXRESULT Get(PBCallInfo * ci);
+	PBXRESULT Remove(PBCallInfo * ci);
 
 protected:
     // member variables

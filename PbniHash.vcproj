@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\Dev\pb\PbniHash\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 10.5\SDK\PBNI\include&quot;"
+				AdditionalIncludeDirectories=".\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 10.5\SDK\PBNI\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;UNICODE;PBNIHASH_EXPORTS"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
@@ -59,7 +59,7 @@
 				AdditionalDependencies="libhashish.lib"
 				OutputFile="$(OutDir)/PbniHash.pbx"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="C:\Dev\pb\PbniHash\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 10.5\SDK\PBNI\lib&quot;"
+				AdditionalLibraryDirectories=".\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 10.5\SDK\PBNI\lib&quot;"
 				IgnoreDefaultLibraryNames="libc.lib "
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/PbniHash.pdb"
@@ -90,6 +90,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="pbx2pbd105 $(TargetName).pbd $(TargetFileName)"
 			/>
 		</Configuration>
 		<Configuration
@@ -117,7 +118,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="C:\Dev\pb\PbniHash\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 10.5\SDK\PBNI\include&quot;"
+				AdditionalIncludeDirectories=".\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 10.5\SDK\PBNI\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;UNICODE;PBNIHASH_EXPORTS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -137,7 +138,7 @@
 				AdditionalDependencies="libhashish.lib"
 				OutputFile="$(OutDir)/PbniHash.pbx"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="C:\Dev\pb\PbniHash\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 10.5\SDK\PBNI\lib&quot;"
+				AdditionalLibraryDirectories=".\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 10.5\SDK\PBNI\lib&quot;"
 				IgnoreDefaultLibraryNames="libc.lib "
 				GenerateDebugInformation="true"
 				SubSystem="2"

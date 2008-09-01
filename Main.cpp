@@ -47,7 +47,9 @@ PBXEXPORT LPCTSTR PBXCALL PBX_GetDescription()
 	  /* PbniHashStr */
       _T("class uo_hash_str from nonvisualobject\n") \
       _T("   function string of_hello()\n") \
-      _T("   function boolean of_add()\n") \
+      _T("   function boolean of_add(string key, string value)\n") \
+      _T("   function string of_get(string key)\n") \
+      _T("   function boolean of_delete(string key)\n") \
       _T("end class\n")
 	};
 
