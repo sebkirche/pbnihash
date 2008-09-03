@@ -2,9 +2,12 @@
 #ifndef CPBNIHASHSTR_H
 #define CPBNIHASHSTR_H
 
+//#define _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES 1
+
 #include <pbext.h>
 #include "libhashish.h"
 
+//#define _CRT_SECURE_NO_DEPRECATE	//disable the warnings concerning unsecure deprecated crt funcs
 #define TABLE_STR_SIZE 23
 
 class PbniHashStr : public IPBX_NonVisualObject

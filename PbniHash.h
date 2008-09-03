@@ -33,7 +33,9 @@ public:
 	enum Function_Entrys
 	{
 		mid_Hello = 0,
-		// TODO: add enum entries for each callable method
+		mid_Add,
+		mid_Get,
+		mid_Remove,
 		NO_MORE_METHODS
 	};
 
@@ -41,6 +43,9 @@ public:
 protected:
  	// methods callable from PowerBuilder
 	PBXRESULT Hello( PBCallInfo * ci );
+	PBXRESULT Add(PBCallInfo * ci);
+	PBXRESULT Get(PBCallInfo * ci);
+	PBXRESULT Remove(PBCallInfo * ci);
 
 protected:
     // member variables

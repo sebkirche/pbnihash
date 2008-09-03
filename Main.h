@@ -6,7 +6,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+#define WIN32_LEAN_AND_MEAN			// Exclude rarely-used stuff from Windows headers
 
 // Insert your headers here
 #include <windows.h>
