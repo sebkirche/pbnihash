@@ -16,7 +16,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\PbniHash"
+			OutputDirectory=".\"
 			IntermediateDirectory=".\obj"
 			ConfigurationType="2"
 			CharacterSet="1"
@@ -95,7 +95,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\PbniHash"
+			OutputDirectory=".\"
 			IntermediateDirectory=".\obj"
 			ConfigurationType="2"
 			CharacterSet="1"
@@ -168,6 +168,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="pbx2pbd105 $(TargetName).pbd $(TargetFileName)"
 			/>
 		</Configuration>
 	</Configurations>

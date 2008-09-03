@@ -48,12 +48,14 @@ PBXEXPORT LPCTSTR PBXCALL PBX_GetDescription()
       _T("end class\n")
 
 	  /* PbniHashStr */
+/*
       _T("class uo_hash_str from nonvisualobject\n") \
       _T("   function string of_hello()\n") \
       _T("   function boolean of_add(string key, string value)\n") \
       _T("   function string of_get(string key)\n") \
       _T("   function boolean of_delete(string key)\n") \
       _T("end class\n")
+*/
 	};
 
    return (LPCTSTR)classDesc;
@@ -72,9 +74,10 @@ PBXEXPORT PBXRESULT PBXCALL PBX_CreateNonVisualObject
    // The name must not contain upper case
    if (_tcscmp(className, _T("uo_hash")) == 0)
       *nvobj = new PbniHash(session);
+/*
    else if (_tcscmp(className, _T("uo_hash_str")) == 0)
       *nvobj = new PbniHashStr(session);
-
+*/
    return PBX_OK;
 }
 

@@ -1,4 +1,6 @@
 // PbniHash.cpp : PBNI class
+#define _CRT_SECURE_NO_DEPRECATE
+
 #include "PbniHash.h"
 
 
@@ -85,8 +87,7 @@ PBXRESULT PbniHash::Add( PBCallInfo * ci )
 	int hi_res;
 
 	// check arguments
-	if ( ci->pArgs->GetAt(0)->IsNull() ||
-		ci->pArgs->GetAt(1)->IsNull() )
+	if ( ci->pArgs->GetAt(0)->IsNull() || ci->pArgs->GetAt(1)->IsNull() )
 	{
 		// if any of the passed arguments is null, return the null value
 		ci->returnValue->SetToNull();
@@ -94,28 +95,25 @@ PBXRESULT PbniHash::Add( PBCallInfo * ci )
 	else
 	{
 		pbstring key = ci->pArgs->GetAt(0)->GetString();
-		//pbstring data = ci->pArgs->GetAt(1)->GetString();
 		LPCTSTR tszKey = m_pSession->GetString(key);
-		//LPCTSTR tszData = m_pSession->GetString(data);
+
+		//ce qui suit est identique a faire un AcquireValue sur la key...
+		wchar_t *localKey = (wchar_t *)malloc((wcslen(tszKey) + 1) * sizeof(wchar_t));
+		wcscpy(localKey, tszKey);
 
 		//convert the key into ansi
-		int iKeyLen = wcstombs(NULL, (LPWSTR)tszKey, 0) + 1;
-		LPSTR ansiKey = (LPSTR)malloc(iKeyLen);				//ne pas oublier le free à la fermeture
-		wcstombs(ansiKey, (LPWSTR)(LPWSTR)tszKey, iKeyLen);
+		//int iKeyLen = wcstombs(NULL, (LPWSTR)tszKey, 0) + 1;
+		//LPSTR ansiKey = (LPSTR)malloc(iKeyLen);				//ne pas oublier le free à la fermeture
+		//wcstombs(ansiKey, (LPWSTR)(LPWSTR)tszKey, iKeyLen);
 
-
-		////alloc a copy for the string 
-		//int iDataLen = (wcslen(tszData) + 1) * sizeof(WCHAR);
-		//void * memdata = malloc(iDataLen);				//ne pas oublier le free à la fermeture
-		//memcpy(memdata, tszData, iDataLen);
 		IPB_Value* data = m_pSession->AcquireValue(ci->pArgs->GetAt(1));
 
-		if (HI_ERR_SUCCESS == hi_insert(m_hi_handle, ansiKey, strlen(ansiKey), data /*tszData*/))
+		if (HI_ERR_SUCCESS == hi_insert(m_hi_handle, (void*)localKey, wcslen(tszKey)* sizeof(WCHAR), data /*tszData*/))
 			ci->returnValue->SetBool(true);
 		else
 			ci->returnValue->SetBool(false);
+		//TODO: need to tell if HI_ERR_DUPKEY
 	}
-
 	return pbxr;
 }
 
@@ -135,18 +133,16 @@ PBXRESULT PbniHash::Get(PBCallInfo *ci)
 		pbstring key = ci->pArgs->GetAt(0)->GetString();
 		LPCTSTR tszKey = m_pSession->GetString(key);
 
-		//convert the key into ansi
-		int iKeyLen = wcstombs(NULL, (LPWSTR)tszKey, 0) + 1;
-		LPSTR ansiKey = (LPSTR)malloc(iKeyLen);
-		wcstombs(ansiKey, (LPWSTR)(LPWSTR)tszKey, iKeyLen);		
+		wchar_t *localKey = (wchar_t *)malloc((wcslen(tszKey) + 1) * sizeof(wchar_t));
+		wcscpy(localKey, tszKey);
 		
 		//search the key
-		iRet = hi_get_str(m_hi_handle, ansiKey, (void**)&data_ptr);
+		iRet = hi_get(m_hi_handle, (void*)localKey, wcslen(tszKey) * sizeof(WCHAR), (void**)&data_ptr);
 		if (HI_ERR_SUCCESS == iRet)
-			//ci->returnValue->SetString((LPCWSTR)data_ptr);
 			m_pSession->SetValue(ci->returnValue, (IPB_Value*)data_ptr);
 		else
 			ci->returnValue->SetToNull();
+		free(localKey);
 	}
 	return pbxr;
 }
@@ -167,19 +163,20 @@ PBXRESULT PbniHash::Remove(PBCallInfo *ci)
 		pbstring key = ci->pArgs->GetAt(0)->GetString();
 		LPCTSTR tszKey = m_pSession->GetString(key);
 
-		//convert the key into ansi
-		int iKeyLen = wcstombs(NULL, (LPWSTR)tszKey, 0) + 1;
-		LPSTR ansiKey = (LPSTR)malloc(iKeyLen);
-		wcstombs(ansiKey, (LPWSTR)(LPWSTR)tszKey, iKeyLen);		
+		wchar_t *localKey = (wchar_t *)malloc((wcslen(tszKey) + 1) * sizeof(wchar_t));
+		wcscpy(localKey, tszKey);
 		
 		//search the key
-		iRet = hi_remove(m_hi_handle, ansiKey, strlen(ansiKey),(void**)&data_ptr);
-		m_pSession->ReleaseValue((IPB_Value*)data_ptr);
+		iRet = hi_remove(m_hi_handle, (void*)localKey, wcslen(tszKey) * sizeof(WCHAR),(void**)&data_ptr);
 		if (HI_ERR_SUCCESS == iRet)
-			//ci->returnValue->SetString((LPCWSTR)data_ptr);
+		{
+			//TODO: need to free the hashed key, for now we have a *memory leak* :(
+			m_pSession->ReleaseValue((IPB_Value*)data_ptr);
 			ci->returnValue->SetBool(true);
+		}
 		else
 			ci->returnValue->SetBool(false);
+		free(localKey);
 	}
 	return pbxr;
 }

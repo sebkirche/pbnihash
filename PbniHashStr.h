@@ -2,7 +2,6 @@
 #ifndef CPBNIHASHSTR_H
 #define CPBNIHASHSTR_H
 
-//#define _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES 1
 
 #include <pbext.h>
 #include "libhashish.h"
