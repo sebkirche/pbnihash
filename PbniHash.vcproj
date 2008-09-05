@@ -90,6 +90,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description="Creating the PBD file"
 				CommandLine="pbx2pbd105 $(TargetName).pbd $(TargetFileName)"
 			/>
 		</Configuration>
@@ -168,6 +169,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description="Creating the PBD file"
 				CommandLine="pbx2pbd105 $(TargetName).pbd $(TargetFileName)"
 			/>
 		</Configuration>

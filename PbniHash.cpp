@@ -59,6 +59,9 @@ PBXRESULT PbniHash::Invoke
 		case mid_Count:
 			pbxr = this->Count(ci);
 			break;
+		case mid_GetKeys:
+			pbxr = this ->GetKeys(ci);
+			break;
 		default:
 			pbxr = PBX_E_INVOKE_METHOD_AMBIGUOUS;
 	}
@@ -211,35 +214,34 @@ PBXRESULT PbniHash::GetKeys(PBCallInfo *ci)
 	}
 	else
 	{
-		pblong dim[1];						//on peut avoir des tableaux avec plusieurs dimensions
-		pbuint numdim = 1;					//arg for the array creation
+		pblong dim[1] = {1};						//on peut avoir des tableaux avec plusieurs dimensions
+													//ici on utilise un tableau à 1 dimension, et on commence à 1
+		pbuint numdim = 1;							//arg for the array creation
 		PBArrayInfo::ArrayBound bound;
 		pbarray keys;
 		void *key, *data;
 		unsigned long keylen;
 
-/*		struct hi_iterator_t iter;
+		hi_iterator_t *iter;
+
 
 		if(HI_SUCCESS == hi_iterator_create(m_hi_handle, &iter))
 		{
+			bound.lowerBound = 1;
+			bound.upperBound = m_hi_handle->no_objects;
+			keys = m_pSession->NewBoundedSimpleArray(pbvalue_string, numdim, &bound);
 			while(HI_SUCCESS == hi_iterator_getnext(iter, &data, &key, &keylen))
 			{
-				OutputDebugString(((PPBDATAREC)data)->key);
+				pbstring pVal = m_pSession->NewString((LPCWSTR)key);
+				OutputDebugString((LPCWSTR)key);
+				m_pSession->SetPBStringArrayItem(keys, dim, pVal);
+				dim[0]++;		//prochain index
+				//liberer la pbstring ?
 			}
 			hi_iterator_fini(iter);
+			ci->pArgs->GetAt(0)->SetArray(keys);
+			ci->returnValue->SetBool(true);
 		}
-*/
-
-/*
-		bound.lowerBound = 1;
-		bound.upperBound = m_hi_handle->no_objects;
-		keys = m_pSession->NewBoundedSimpleArray(pbvalue_string, numdim, &bound);
-		for(ulong i = 1; i <= m_hi_handle->no_objects; i++)
-		{
-			dim[0] = 1;		//on ajoute dans la première dim du tableau
-			pbstring pVal = m_pSession->NewString(
-		}
-*/
 	}
 
 	return pbxr;

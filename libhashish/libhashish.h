@@ -29,7 +29,7 @@
 
 	typedef unsigned char             uint8_t;
 	typedef unsigned short int        uint16_t;
-	typedef unsigned int              uint32_t;
+	typedef unsigned long             uint32_t;
 	/* no uint64_t */
 
 	#define vsnprintf _vsnprintf /* MSVC does not support these standard C99 funcs */
