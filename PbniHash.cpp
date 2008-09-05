@@ -107,11 +107,6 @@ PBXRESULT PbniHash::Add( PBCallInfo * ci )
 		wchar_t *localKey = (wchar_t *)malloc((wcslen(tszKey) + 1) * sizeof(wchar_t));
 		wcscpy(localKey, tszKey);
 
-		//convert the key into ansi
-		//int iKeyLen = wcstombs(NULL, (LPWSTR)tszKey, 0) + 1;
-		//LPSTR ansiKey = (LPSTR)malloc(iKeyLen);				//ne pas oublier le free à la fermeture
-		//wcstombs(ansiKey, (LPWSTR)(LPWSTR)tszKey, iKeyLen);
-
 		IPB_Value *data = m_pSession->AcquireValue(ci->pArgs->GetAt(1));
 
 		PPBDATAREC dataRecord = (PPBDATAREC)malloc(sizeof(PBDATAREC));
@@ -143,16 +138,12 @@ PBXRESULT PbniHash::Get(PBCallInfo *ci)
 		pbstring key = ci->pArgs->GetAt(0)->GetString();
 		LPCTSTR tszKey = m_pSession->GetString(key);
 
-		//wchar_t *localKey = (wchar_t *)malloc((wcslen(tszKey) + 1) * sizeof(wchar_t));
-		//wcscpy(localKey, tszKey);
-		
 		//search the key
 		iRet = hi_get(m_hi_handle, (void*)tszKey, wcslen(tszKey) * sizeof(WCHAR), (void**)&data_ptr);
 		if (HI_SUCCESS == iRet)
 			m_pSession->SetValue(ci->returnValue, (IPB_Value*)data_ptr->data);
 		else
 			ci->returnValue->SetToNull();
-		//free(localKey);
 	}
 	return pbxr;
 }
@@ -172,9 +163,6 @@ PBXRESULT PbniHash::Remove(PBCallInfo *ci)
 	{
 		pbstring key = ci->pArgs->GetAt(0)->GetString();
 		LPCTSTR tszKey = m_pSession->GetString(key);
-
-		//wchar_t *localKey = (wchar_t *)malloc((wcslen(tszKey) + 1) * sizeof(wchar_t));
-		//wcscpy(localKey, tszKey);
 		
 		//search the key
 		iRet = hi_remove(m_hi_handle, (void*)tszKey, wcslen(tszKey) * sizeof(WCHAR),(void**)&data_ptr);
@@ -188,7 +176,6 @@ PBXRESULT PbniHash::Remove(PBCallInfo *ci)
 		}
 		else
 			ci->returnValue->SetBool(false);
-		//free(localKey);
 	}
 	return pbxr;
 }
