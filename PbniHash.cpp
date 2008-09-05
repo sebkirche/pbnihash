@@ -2,6 +2,7 @@
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include "PbniHash.h"
+#include "libhashish.h"
 
 
 // default constructor
@@ -55,7 +56,9 @@ PBXRESULT PbniHash::Invoke
 		case mid_Remove:
 			pbxr = this->Remove(ci);
 			break;
-
+		case mid_Count:
+			pbxr = this->Count(ci);
+			break;
 		default:
 			pbxr = PBX_E_INVOKE_METHOD_AMBIGUOUS;
 	}
@@ -106,9 +109,13 @@ PBXRESULT PbniHash::Add( PBCallInfo * ci )
 		//LPSTR ansiKey = (LPSTR)malloc(iKeyLen);				//ne pas oublier le free à la fermeture
 		//wcstombs(ansiKey, (LPWSTR)(LPWSTR)tszKey, iKeyLen);
 
-		IPB_Value* data = m_pSession->AcquireValue(ci->pArgs->GetAt(1));
+		IPB_Value *data = m_pSession->AcquireValue(ci->pArgs->GetAt(1));
 
-		if (HI_ERR_SUCCESS == hi_insert(m_hi_handle, (void*)localKey, wcslen(tszKey)* sizeof(WCHAR), data /*tszData*/))
+		PPBDATAREC dataRecord = (PPBDATAREC)malloc(sizeof(PBDATAREC));
+		dataRecord->key = localKey;
+		dataRecord->data = data;
+
+		if (HI_SUCCESS == hi_insert(m_hi_handle, (void*)dataRecord->key, wcslen((LPWSTR)(dataRecord->key))* sizeof(WCHAR), dataRecord /*tszData*/))
 			ci->returnValue->SetBool(true);
 		else
 			ci->returnValue->SetBool(false);
@@ -121,7 +128,7 @@ PBXRESULT PbniHash::Get(PBCallInfo *ci)
 {
 	PBXRESULT	pbxr = PBX_OK;
 	int iRet;
-	void *data_ptr;
+	PPBDATAREC data_ptr;
 
 	if ( ci->pArgs->GetAt(0)->IsNull())
 	{
@@ -133,16 +140,16 @@ PBXRESULT PbniHash::Get(PBCallInfo *ci)
 		pbstring key = ci->pArgs->GetAt(0)->GetString();
 		LPCTSTR tszKey = m_pSession->GetString(key);
 
-		wchar_t *localKey = (wchar_t *)malloc((wcslen(tszKey) + 1) * sizeof(wchar_t));
-		wcscpy(localKey, tszKey);
+		//wchar_t *localKey = (wchar_t *)malloc((wcslen(tszKey) + 1) * sizeof(wchar_t));
+		//wcscpy(localKey, tszKey);
 		
 		//search the key
-		iRet = hi_get(m_hi_handle, (void*)localKey, wcslen(tszKey) * sizeof(WCHAR), (void**)&data_ptr);
-		if (HI_ERR_SUCCESS == iRet)
-			m_pSession->SetValue(ci->returnValue, (IPB_Value*)data_ptr);
+		iRet = hi_get(m_hi_handle, (void*)tszKey, wcslen(tszKey) * sizeof(WCHAR), (void**)&data_ptr);
+		if (HI_SUCCESS == iRet)
+			m_pSession->SetValue(ci->returnValue, (IPB_Value*)data_ptr->data);
 		else
 			ci->returnValue->SetToNull();
-		free(localKey);
+		//free(localKey);
 	}
 	return pbxr;
 }
@@ -151,7 +158,7 @@ PBXRESULT PbniHash::Remove(PBCallInfo *ci)
 {
 	PBXRESULT	pbxr = PBX_OK;
 	int iRet;
-	void *data_ptr;
+	PPBDATAREC data_ptr;
 
 	if ( ci->pArgs->GetAt(0)->IsNull())
 	{
@@ -163,21 +170,77 @@ PBXRESULT PbniHash::Remove(PBCallInfo *ci)
 		pbstring key = ci->pArgs->GetAt(0)->GetString();
 		LPCTSTR tszKey = m_pSession->GetString(key);
 
-		wchar_t *localKey = (wchar_t *)malloc((wcslen(tszKey) + 1) * sizeof(wchar_t));
-		wcscpy(localKey, tszKey);
+		//wchar_t *localKey = (wchar_t *)malloc((wcslen(tszKey) + 1) * sizeof(wchar_t));
+		//wcscpy(localKey, tszKey);
 		
 		//search the key
-		iRet = hi_remove(m_hi_handle, (void*)localKey, wcslen(tszKey) * sizeof(WCHAR),(void**)&data_ptr);
-		if (HI_ERR_SUCCESS == iRet)
+		iRet = hi_remove(m_hi_handle, (void*)tszKey, wcslen(tszKey) * sizeof(WCHAR),(void**)&data_ptr);
+		if (HI_SUCCESS == iRet)
 		{
 			//TODO: need to free the hashed key, for now we have a *memory leak* :(
-			m_pSession->ReleaseValue((IPB_Value*)data_ptr);
+			free(data_ptr->key);
+			m_pSession->ReleaseValue((IPB_Value*)data_ptr->data);
+			free(data_ptr);
 			ci->returnValue->SetBool(true);
 		}
 		else
 			ci->returnValue->SetBool(false);
-		free(localKey);
+		//free(localKey);
 	}
 	return pbxr;
 }
 
+PBXRESULT PbniHash::Count(PBCallInfo *ci)
+{
+	PBXRESULT	pbxr = PBX_OK;
+	pbulong ulRet = m_hi_handle->no_objects;
+	ci->returnValue->SetLong(ulRet);
+
+	return pbxr;
+}
+
+
+PBXRESULT PbniHash::GetKeys(PBCallInfo *ci)
+{
+	PBXRESULT pbxr = PBX_OK;
+
+	if(ci->pArgs->GetAt(0)->IsNull() || !ci->pArgs->GetAt(0)->IsArray() || !ci->pArgs->GetAt(0)->IsByRef())
+	{
+		//there must be one reference to an array
+		ci->returnValue->SetBool(false);
+	}
+	else
+	{
+		pblong dim[1];						//on peut avoir des tableaux avec plusieurs dimensions
+		pbuint numdim = 1;					//arg for the array creation
+		PBArrayInfo::ArrayBound bound;
+		pbarray keys;
+		void *key, *data;
+		unsigned long keylen;
+
+/*		struct hi_iterator_t iter;
+
+		if(HI_SUCCESS == hi_iterator_create(m_hi_handle, &iter))
+		{
+			while(HI_SUCCESS == hi_iterator_getnext(iter, &data, &key, &keylen))
+			{
+				OutputDebugString(((PPBDATAREC)data)->key);
+			}
+			hi_iterator_fini(iter);
+		}
+*/
+
+/*
+		bound.lowerBound = 1;
+		bound.upperBound = m_hi_handle->no_objects;
+		keys = m_pSession->NewBoundedSimpleArray(pbvalue_string, numdim, &bound);
+		for(ulong i = 1; i <= m_hi_handle->no_objects; i++)
+		{
+			dim[0] = 1;		//on ajoute dans la première dim du tableau
+			pbstring pVal = m_pSession->NewString(
+		}
+*/
+	}
+
+	return pbxr;
+}

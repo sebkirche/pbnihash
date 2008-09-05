@@ -15,8 +15,6 @@ public:
 	PbniHash( IPB_Session * pSession );
 	virtual ~PbniHash();
 
-	
-
 	// IPBX_UserObject methods
 	PBXRESULT Invoke
 	(
@@ -28,7 +26,6 @@ public:
 
    void Destroy();
 
-
 	// PowerBuilder method wrappers
 	enum Function_Entrys
 	{
@@ -36,6 +33,8 @@ public:
 		mid_Add,
 		mid_Get,
 		mid_Remove,
+		mid_Count,
+		mid_GetKeys,
 		NO_MORE_METHODS
 	};
 
@@ -46,11 +45,17 @@ protected:
 	PBXRESULT Add(PBCallInfo * ci);
 	PBXRESULT Get(PBCallInfo * ci);
 	PBXRESULT Remove(PBCallInfo * ci);
+	PBXRESULT Count(PBCallInfo * ci);
+	PBXRESULT GetKeys(PBCallInfo * ci);
 
 protected:
     // member variables
     IPB_Session * m_pSession;
 	hi_handle_t * m_hi_handle;
+	typedef struct PBDataRec {
+		void *key;
+		void *data;
+	} PBDATAREC, *PPBDATAREC;
  };
 
 #endif	// !defined(CPBNIHASH_H)
