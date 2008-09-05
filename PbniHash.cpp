@@ -197,7 +197,7 @@ PBXRESULT PbniHash::Count(PBCallInfo *ci)
 {
 	PBXRESULT	pbxr = PBX_OK;
 	pbulong ulRet = m_hi_handle->no_objects;
-	ci->returnValue->SetLong(ulRet);
+	ci->returnValue->SetUlong(ulRet);
 
 	return pbxr;
 }
