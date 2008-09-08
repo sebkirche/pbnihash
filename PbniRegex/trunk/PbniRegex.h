@@ -31,6 +31,7 @@ public:
 		mid_Init,
 		mid_Test,
 		mid_SetUtf,
+		mid_Search,
 		NO_MORE_METHODS
 	};
 
@@ -41,6 +42,7 @@ protected:
 	PBXRESULT Initialize(PBCallInfo * ci);
 	PBXRESULT Test(PBCallInfo * ci);
 	PBXRESULT SetUtf(PBCallInfo * ci);
+	PBXRESULT Search(PBCallInfo * ci);
 
 protected:
     // member variables

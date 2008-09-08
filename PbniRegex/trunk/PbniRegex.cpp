@@ -56,6 +56,12 @@ PBXRESULT PbniRegex::Invoke
 		case mid_Test:
 			pbxr = this->Test(ci);
 			break;
+		case mid_SetUtf:
+			pbxr = this->SetUtf(ci);
+			break;
+		case mid_Search:
+			pbxr = this->Search(ci);
+			break;
 		default:
 			pbxr = PBX_E_INVOKE_METHOD_AMBIGUOUS;
 	}
@@ -192,6 +198,13 @@ PBXRESULT PbniRegex::SetUtf(PBCallInfo *ci)
 	PBXRESULT pbxr = PBX_OK;
 
 	m_butf8 = ci->pArgs->GetAt(0)->GetBool();
+
+	return pbxr;
+}
+
+PBXRESULT PbniRegex::Search(PBCallInfo *ci)
+{
+	PBXRESULT pbxr = PBX_OK;
 
 	return pbxr;
 }
