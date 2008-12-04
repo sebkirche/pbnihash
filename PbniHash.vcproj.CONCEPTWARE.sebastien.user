@@ -10,8 +10,8 @@
 			>
 			<DebugSettings
 				Command="C:\Program Files\Sybase\PowerBuilder 10.5\PB105.EXE"
-				WorkingDirectory=""
-				CommandArguments=""
+				WorkingDirectory="C:\Dev\pb\CW\PbniHash"
+				CommandArguments="/workspace worksp.pbw"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"

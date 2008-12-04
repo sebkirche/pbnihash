@@ -15,11 +15,13 @@ PbniHash::PbniHash( IPB_Session * pSession )
 {
 	struct hi_init_set hi_set;
 
+	m_lastError = HI_ERR_SUCCESS;
 	hi_set_zero(&hi_set);
 	hi_set_bucket_size(&hi_set, TABLE_SIZE);
 	hi_set_hash_alg(&hi_set, HI_HASH_DEFAULT);
 	hi_set_coll_eng(&hi_set, COLL_ENG_LIST);
-	hi_set_key_cmp_func(&hi_set, hi_cmp_int32);
+	//hi_set_key_cmp_func(&hi_set, hi_cmp_int32);
+	hi_set_key_cmp_func(&hi_set, hi_cmp_str);
 
 	hi_create(&m_hi_handle, &hi_set);	//todo: check error
 }
@@ -62,6 +64,15 @@ PBXRESULT PbniHash::Invoke
 		case mid_GetKeys:
 			pbxr = this ->GetKeys(ci);
 			break;
+		case mid_GetLastError:
+			pbxr = this ->GetLastErr(ci);
+			break;
+		case mid_GetLastErrMsg:
+			pbxr = this ->GetLastErrMsg(ci);
+			break;
+		case mid_UseStrCompare:
+			pbxr = this ->GetKeys(ci);//!!!!
+			break;
 		default:
 			pbxr = PBX_E_INVOKE_METHOD_AMBIGUOUS;
 	}
@@ -91,6 +102,7 @@ PBXRESULT PbniHash::Add( PBCallInfo * ci )
 {
 	PBXRESULT	pbxr = PBX_OK;
 	int hi_res;
+	int keyLen;
 
 	// check arguments
 	if ( ci->pArgs->GetAt(0)->IsNull() || ci->pArgs->GetAt(1)->IsNull() )
@@ -104,20 +116,25 @@ PBXRESULT PbniHash::Add( PBCallInfo * ci )
 		LPCTSTR tszKey = m_pSession->GetString(key);
 
 		//ce qui suit est identique a faire un AcquireValue sur la key...
-		wchar_t *localKey = (wchar_t *)malloc((wcslen(tszKey) + 1) * sizeof(wchar_t));
-		wcscpy(localKey, tszKey);
+		//wchar_t *localKey = (wchar_t *)malloc((wcslen(tszKey) + 1) * sizeof(wchar_t));
+		//wcscpy(localKey, tszKey);
+		keyLen = wcstombs(NULL, (LPWSTR)tszKey, 0) + 2;
+		char *localKey = (char*)malloc(keyLen);
+		wcstombs(localKey, (LPWSTR)tszKey, keyLen);
 
 		IPB_Value *data = m_pSession->AcquireValue(ci->pArgs->GetAt(1));
 
 		PPBDATAREC dataRecord = (PPBDATAREC)malloc(sizeof(PBDATAREC));
 		dataRecord->key = localKey;
 		dataRecord->data = data;
-
-		if (HI_SUCCESS == hi_insert(m_hi_handle, (void*)dataRecord->key, wcslen((LPWSTR)(dataRecord->key))* sizeof(WCHAR), dataRecord /*tszData*/))
+		
+		hi_res = hi_insert(m_hi_handle, (void*)dataRecord->key, strlen(localKey), dataRecord /*tszData*/);
+		if (HI_SUCCESS == hi_res)
 			ci->returnValue->SetBool(true);
 		else
 			ci->returnValue->SetBool(false);
 		//TODO: need to tell if HI_ERR_DUPKEY
+		m_lastError = hi_res;
 	}
 	return pbxr;
 }
@@ -137,13 +154,17 @@ PBXRESULT PbniHash::Get(PBCallInfo *ci)
 	{
 		pbstring key = ci->pArgs->GetAt(0)->GetString();
 		LPCTSTR tszKey = m_pSession->GetString(key);
+		int keyLen = wcstombs(NULL, (LPWSTR)tszKey, 0) + 2;
+		char *localKey = (char*)malloc(keyLen);
+		wcstombs(localKey, (LPWSTR)tszKey, keyLen);
 
 		//search the key
-		iRet = hi_get(m_hi_handle, (void*)tszKey, wcslen(tszKey) * sizeof(WCHAR), (void**)&data_ptr);
+		iRet = hi_get(m_hi_handle, (void*)localKey, strlen(localKey), (void**)&data_ptr);
 		if (HI_SUCCESS == iRet)
 			m_pSession->SetValue(ci->returnValue, (IPB_Value*)data_ptr->data);
 		else
 			ci->returnValue->SetToNull();
+		free(localKey);
 	}
 	return pbxr;
 }
@@ -163,9 +184,12 @@ PBXRESULT PbniHash::Remove(PBCallInfo *ci)
 	{
 		pbstring key = ci->pArgs->GetAt(0)->GetString();
 		LPCTSTR tszKey = m_pSession->GetString(key);
+		int keyLen = wcstombs(NULL, (LPWSTR)tszKey, 0) + 2;
+		char *localKey = (char*)malloc(keyLen);
+		wcstombs(localKey, (LPWSTR)tszKey, keyLen);
 		
 		//search the key
-		iRet = hi_remove(m_hi_handle, (void*)tszKey, wcslen(tszKey) * sizeof(WCHAR),(void**)&data_ptr);
+		iRet = hi_remove(m_hi_handle, (void*)localKey, strlen(localKey),(void**)&data_ptr);
 		if (HI_SUCCESS == iRet)
 		{
 			//TODO: need to free the hashed key, for now we have a *memory leak* :(
@@ -176,6 +200,7 @@ PBXRESULT PbniHash::Remove(PBCallInfo *ci)
 		}
 		else
 			ci->returnValue->SetBool(false);
+		free(localKey);
 	}
 	return pbxr;
 }
@@ -186,6 +211,29 @@ PBXRESULT PbniHash::Count(PBCallInfo *ci)
 	pbulong ulRet = m_hi_handle->no_objects;
 	ci->returnValue->SetUlong(ulRet);
 
+	return pbxr;
+}
+
+PBXRESULT PbniHash::GetLastErr(PBCallInfo *ci)
+{
+	PBXRESULT	pbxr = PBX_OK;
+	//pblong lRet = m_lastError;
+	ci->returnValue->SetLong(m_lastError);
+
+	return pbxr;
+}
+
+PBXRESULT PbniHash::GetLastErrMsg(PBCallInfo *ci)
+{
+	PBXRESULT	pbxr = PBX_OK;
+	const char *msg;
+
+	msg = hi_strerror(m_lastError);
+	int msgLen = mbstowcs(NULL, msg, strlen(msg)+1);
+	LPWSTR wmsg = (LPWSTR)malloc((msgLen+1) * sizeof(wchar_t));
+	mbstowcs(wmsg, msg, strlen(msg)+1);
+	ci->returnValue->SetString(wmsg);
+	free(wmsg);
 	return pbxr;
 }
 
@@ -219,11 +267,16 @@ PBXRESULT PbniHash::GetKeys(PBCallInfo *ci)
 			keys = m_pSession->NewBoundedSimpleArray(pbvalue_string, numdim, &bound);
 			while(HI_SUCCESS == hi_iterator_getnext(iter, &data, &key, &keylen))
 			{
-				pbstring pVal = m_pSession->NewString((LPCWSTR)key);
+				int keyLen = mbstowcs(NULL, (const char*)key, 0);
+				LPWSTR wstr = (LPWSTR)malloc((keyLen+1) * sizeof(wchar_t));
+				mbstowcs(wstr, (const char*)key, keyLen + 1);
+
+				pbstring pVal = m_pSession->NewString((LPCWSTR)wstr);
 				OutputDebugString((LPCWSTR)key);
 				m_pSession->SetPBStringArrayItem(keys, dim, pVal);
 				dim[0]++;		//prochain index
 				//liberer la pbstring ?
+				free(wstr);
 			}
 			hi_iterator_fini(iter);
 			ci->pArgs->GetAt(0)->SetArray(keys);

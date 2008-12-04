@@ -47,6 +47,9 @@ PBXEXPORT LPCTSTR PBXCALL PBX_GetDescription()
       _T("   function boolean of_delete(string key)\n") \
       _T("   function ulong of_getcount()\n") \
       _T("   function boolean of_getkeys(ref string keys[])\n") \
+      _T("   function long of_getlasterror()\n") \
+      _T("   function string of_getlasterrmsg()\n") \
+      //_T("   subroutine of_usestringkeycompare(boolean usestring)\n") 
       _T("end class\n")
 
 	  /* PbniHashStr */

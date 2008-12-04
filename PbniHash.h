@@ -35,6 +35,9 @@ public:
 		mid_Remove,
 		mid_Count,
 		mid_GetKeys,
+		mid_GetLastError,
+		mid_GetLastErrMsg,
+		mid_UseStrCompare,
 		NO_MORE_METHODS
 	};
 
@@ -47,6 +50,9 @@ protected:
 	PBXRESULT Remove(PBCallInfo * ci);
 	PBXRESULT Count(PBCallInfo * ci);
 	PBXRESULT GetKeys(PBCallInfo * ci);
+	PBXRESULT GetLastErr(PBCallInfo * ci);
+	PBXRESULT GetLastErrMsg(PBCallInfo * ci);
+	PBXRESULT UseStringCompare(PBCallInfo * ci);
 
 protected:
     // member variables
@@ -56,6 +62,7 @@ protected:
 		void *key;
 		void *data;
 	} PBDATAREC, *PPBDATAREC;
+	int m_lastError;
  };
 
 #endif	// !defined(CPBNIHASH_H)
