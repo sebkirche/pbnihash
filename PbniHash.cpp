@@ -272,7 +272,9 @@ PBXRESULT PbniHash::GetKeys(PBCallInfo *ci)
 				mbstowcs(wstr, (const char*)key, keyLen + 1);
 
 				pbstring pVal = m_pSession->NewString((LPCWSTR)wstr);
-				OutputDebugString((LPCWSTR)key);
+#ifdef _DEBUG
+				OutputDebugString(wstr);
+#endif
 				m_pSession->SetPBStringArrayItem(keys, dim, pVal);
 				dim[0]++;		//prochain index
 				//liberer la pbstring ?
