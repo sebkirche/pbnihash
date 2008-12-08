@@ -29,6 +29,7 @@ PbniHash::PbniHash( IPB_Session * pSession )
 // destructor
 PbniHash::~PbniHash()
 {
+	DoPurge();
 	hi_fini(m_hi_handle);
 }
 
@@ -70,8 +71,11 @@ PBXRESULT PbniHash::Invoke
 		case mid_GetLastErrMsg:
 			pbxr = this ->GetLastErrMsg(ci);
 			break;
-		case mid_UseStrCompare:
+		/*case mid_UseStrCompare:
 			pbxr = this ->GetKeys(ci);//!!!!
+			break;*/
+		case mid_Purge:
+			pbxr = this->Purge(ci);
 			break;
 		default:
 			pbxr = PBX_E_INVOKE_METHOD_AMBIGUOUS;
@@ -287,4 +291,41 @@ PBXRESULT PbniHash::GetKeys(PBCallInfo *ci)
 	}
 
 	return pbxr;
+}
+
+
+PBXRESULT PbniHash::Purge(PBCallInfo *ci)
+{
+	PBXRESULT pbxr = PBX_OK;
+
+	DoPurge();
+	return pbxr;
+}
+ 
+void PbniHash::DoPurge()
+{
+	void *key, *data;
+	unsigned long keylen;
+	int iRet;
+	PPBDATAREC data_ptr;
+	hi_iterator_t *iter;
+
+
+	if(HI_SUCCESS == hi_iterator_create(m_hi_handle, &iter))
+	{
+		while(HI_SUCCESS == hi_iterator_getnext(iter, &data, &key, &keylen))
+		{
+#ifdef _DEBUG
+			OutputDebugStringA((char*)key);
+#endif
+			iRet = hi_remove(m_hi_handle, key, keylen,(void**)&data_ptr);
+			if (HI_SUCCESS == iRet)
+			{
+				free(data_ptr->key);
+				m_pSession->ReleaseValue((IPB_Value*)(data_ptr->data));
+				free(data_ptr);
+			}
+		}
+		hi_iterator_fini(iter);
+	}
 }

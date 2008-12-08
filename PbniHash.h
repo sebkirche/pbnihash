@@ -37,7 +37,8 @@ public:
 		mid_GetKeys,
 		mid_GetLastError,
 		mid_GetLastErrMsg,
-		mid_UseStrCompare,
+		//mid_UseStrCompare,
+		mid_Purge,
 		NO_MORE_METHODS
 	};
 
@@ -53,6 +54,8 @@ protected:
 	PBXRESULT GetLastErr(PBCallInfo * ci);
 	PBXRESULT GetLastErrMsg(PBCallInfo * ci);
 	PBXRESULT UseStringCompare(PBCallInfo * ci);
+	PBXRESULT Purge(PBCallInfo * ci);
+	void DoPurge();
 
 protected:
     // member variables
