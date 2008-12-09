@@ -4,6 +4,11 @@
 #include "PbniHash.h"
 #include "libhashish.h"
 
+#ifdef _DEBUG
+#define	VERSION_STR	_T(" (Debug version)")
+#else
+#define	VERSION_STR	_T(" (Release version)")
+#endif
 
 // default constructor
 PbniHash::PbniHash()
@@ -96,7 +101,7 @@ PBXRESULT PbniHash::Hello( PBCallInfo * ci )
 	PBXRESULT	pbxr = PBX_OK;
 
 	// return value
-	ci->returnValue->SetString( _T("Hello from PbniHash") );
+	ci->returnValue->SetString( _T("Hello from PbniHash" VERSION_STR) );
 
 	return pbxr;
 }
