@@ -82,6 +82,9 @@ PBXRESULT PbniHash::Invoke
 		case mid_Purge:
 			pbxr = this->Purge(ci);
 			break;
+		case mid_Set:
+			pbxr = this->Set(ci);
+			break;
 		default:
 			pbxr = PBX_E_INVOKE_METHOD_AMBIGUOUS;
 	}
@@ -174,6 +177,54 @@ PBXRESULT PbniHash::Get(PBCallInfo *ci)
 		else
 			ci->returnValue->SetToNull();
 		free(localKey);
+		m_lastError = iRet;
+	}
+	return pbxr;
+}
+
+PBXRESULT PbniHash::Set(PBCallInfo *ci)
+{
+	PBXRESULT	pbxr = PBX_OK;
+	int iRet;
+	PPBDATAREC data_ptr;
+
+	if ( ci->pArgs->GetAt(0)->IsNull() || ci->pArgs->GetAt(1)->IsNull() )
+	{
+		// if any of the passed arguments is null, return the null value
+		ci->returnValue->SetToNull();
+	}
+	else
+	{
+		pbstring key = ci->pArgs->GetAt(0)->GetString();
+		LPCTSTR tszKey = m_pSession->GetString(key);
+		int keyLen = wcstombs(NULL, (LPWSTR)tszKey, 0) + 2;
+		char *localKey = (char*)malloc(keyLen);
+		wcstombs(localKey, (LPWSTR)tszKey, keyLen);
+
+		//search the key
+		iRet = hi_get(m_hi_handle, (void*)localKey, strlen(localKey), (void**)&data_ptr);
+		if (HI_SUCCESS == iRet)
+		{
+			//exists, so we can free the existing data and replace by our new one
+			m_pSession->ReleaseValue((IPB_Value*)data_ptr->data);
+			IPB_Value *data = m_pSession->AcquireValue(ci->pArgs->GetAt(1));
+			data_ptr->data = data;
+			ci->returnValue->SetBool(true);
+			free(localKey);
+		}
+		else
+		{
+			IPB_Value *data = m_pSession->AcquireValue(ci->pArgs->GetAt(1));
+			PPBDATAREC dataRecord = (PPBDATAREC)malloc(sizeof(PBDATAREC));
+			dataRecord->key = localKey;
+			dataRecord->data = data;
+			iRet = hi_insert(m_hi_handle, (void*)dataRecord->key, strlen(localKey), dataRecord /*tszData*/);
+			if (HI_SUCCESS == iRet)
+				ci->returnValue->SetBool(true);
+			else
+				ci->returnValue->SetBool(false);
+		}
+		m_lastError = iRet;
 	}
 	return pbxr;
 }
@@ -201,7 +252,6 @@ PBXRESULT PbniHash::Remove(PBCallInfo *ci)
 		iRet = hi_remove(m_hi_handle, (void*)localKey, strlen(localKey),(void**)&data_ptr);
 		if (HI_SUCCESS == iRet)
 		{
-			//TODO: need to free the hashed key, for now we have a *memory leak* :(
 			free(data_ptr->key);
 			m_pSession->ReleaseValue((IPB_Value*)data_ptr->data);
 			free(data_ptr);
@@ -210,6 +260,7 @@ PBXRESULT PbniHash::Remove(PBCallInfo *ci)
 		else
 			ci->returnValue->SetBool(false);
 		free(localKey);
+		m_lastError = iRet;
 	}
 	return pbxr;
 }

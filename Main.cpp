@@ -50,6 +50,7 @@ PBXEXPORT LPCTSTR PBXCALL PBX_GetDescription()
       _T("   function long of_getlasterror()\n") \
       _T("   function string of_getlasterrmsg()\n") \
 	  _T("   subroutine of_purge()\n") \
+      _T("   function boolean of_set(string key, any value)\n") \
       _T("end class\n")
       //_T("   subroutine of_usestringkeycompare(boolean usestring)\n") 
 
