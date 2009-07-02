@@ -5,9 +5,9 @@
 #include "libhashish.h"
 
 #ifdef _DEBUG
-#define	VERSION_STR	_T(" (Debug version)")
+#define	VERSION_STR	_T(" (Debug version - ") _T(__DATE__) _T(" ") _T(__TIME__) _T(")")
 #else
-#define	VERSION_STR	_T(" (Release version)")
+#define	VERSION_STR	_T(" (Release version - ") _T(__DATE__) _T(" ") _T(__TIME__) _T(")")
 #endif
 
 // default constructor
@@ -104,7 +104,7 @@ PBXRESULT PbniHash::Hello( PBCallInfo * ci )
 	PBXRESULT	pbxr = PBX_OK;
 
 	// return value
-	ci->returnValue->SetString( _T("Hello from PbniHash" VERSION_STR) );
+	ci->returnValue->SetString( _T("Hello from PbniHash") VERSION_STR );
 
 	return pbxr;
 }
@@ -311,8 +311,6 @@ PBXRESULT PbniHash::GetKeys(PBCallInfo *ci)
 	{
 		pblong dim[1] = {1};						//on peut avoir des tableaux avec plusieurs dimensions
 													//ici on utilise un tableau à 1 dimension, et on commence à 1
-		pbuint numdim = 1;							//arg for the array creation
-		PBArrayInfo::ArrayBound bound;
 		pbarray keys;
 		void *key, *data;
 		unsigned long keylen;
@@ -322,22 +320,17 @@ PBXRESULT PbniHash::GetKeys(PBCallInfo *ci)
 
 		if(HI_SUCCESS == hi_iterator_create(m_hi_handle, &iter))
 		{
-			bound.lowerBound = 1;
-			bound.upperBound = m_hi_handle->no_objects;
-			keys = m_pSession->NewBoundedSimpleArray(pbvalue_string, numdim, &bound);
+			keys = m_pSession->NewUnboundedSimpleArray(pbvalue_string);
 			while(HI_SUCCESS == hi_iterator_getnext(iter, &data, &key, &keylen))
 			{
 				int keyLen = mbstowcs(NULL, (const char*)key, 0);
 				LPWSTR wstr = (LPWSTR)malloc((keyLen+1) * sizeof(wchar_t));
 				mbstowcs(wstr, (const char*)key, keyLen + 1);
-
-				pbstring pVal = m_pSession->NewString((LPCWSTR)wstr);
 #ifdef _DEBUG
 				OutputDebugString(wstr);
 #endif
-				m_pSession->SetPBStringArrayItem(keys, dim, pVal);
+				m_pSession->SetStringArrayItem(keys, dim, wstr);
 				dim[0]++;		//prochain index
-				//liberer la pbstring ?
 				free(wstr);
 			}
 			hi_iterator_fini(iter);

@@ -1,0 +1,21 @@
+HISTORY -=- Last edit Time-stamp: <02/07/2009 16:03 sebastien@PC-SEBASTIEN>
+=======
+
+2009-??-?? - first public release (soon)
+
+2009-07-02 - bug fixed GetKeys() - the returned array is from correct type so no more
+             crash while copying the array
+
+2009-06-05 - Nicolas Georges has recompiled libhashish without tree hashing algorithm to
+             let us use the BSD license
+
+2008-09-01 - start of the project
+
+;;----------------------------------------------------------------------------
+;; Local Variables:
+;; mode:text
+;; fill-column:90
+;; indent-tabs-mode:nil
+;; tab-stop-list:(2 4 6 8 16 24 32 40 48 56 64 72 80 88 96 104 112 120)
+;; time-stamp-format: "%02d/%02m/%:y %02H:%02M %u@%s"
+;; End:

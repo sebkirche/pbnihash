@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="PbniHash"
 	ProjectGUID="{33C1C843-57F6-4411-ABA9-58612B39F11F}"
 	RootNamespace="PbniHash"
@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 11.5\SDK\PBNI\include&quot;"
+				AdditionalIncludeDirectories=".\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 10.5\SDK\PBNI\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;UNICODE;PBNIHASH_EXPORTS"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
@@ -58,13 +58,14 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libhashish.lib"
-				OutputFile="$(OutDir)/PbniHash.pbx"
+				AdditionalDependencies="libhashish.lib pbni.lib libcmt.lib"
+				OutputFile="$(OutDir)\PbniHash.pbx"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories=".\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 11.5\SDK\PBNI\lib&quot;"
+				AdditionalLibraryDirectories=".\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 10.5\SDK\PBNI\lib&quot;"
+				IgnoreAllDefaultLibraries="true"
 				IgnoreDefaultLibraryNames="libc.lib "
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/PbniHash.pdb"
+				ProgramDatabaseFile="$(OutDir)\PbniHash.pdb"
 				SubSystem="2"
 				ImportLibrary="$(OutDir)/PbniHash.lib"
 				TargetMachine="1"
@@ -93,7 +94,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Creating the PBD file"
-				CommandLine="pbx2pbd115 $(TargetName).pbd $(TargetFileName)"
+				CommandLine="pbx2pbd105 $(TargetName).pbd $(TargetFileName)"
 			/>
 		</Configuration>
 		<Configuration
@@ -140,10 +141,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libhashish.lib"
-				OutputFile="$(OutDir)/PbniHash.pbx"
+				AdditionalDependencies="libhashish.lib pbni.lib libcmt.lib"
+				OutputFile="$(OutDir)\PbniHash.pbx"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=".\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 10.5\SDK\PBNI\lib&quot;"
+				IgnoreAllDefaultLibraries="true"
 				IgnoreDefaultLibraryNames="libc.lib "
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -231,6 +233,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\history.txt"
+			>
+		</File>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>
