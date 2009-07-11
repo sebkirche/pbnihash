@@ -1,30 +1,14 @@
-========================================================================
-    PBNIWizard : "PbniHash" Project Overview
-========================================================================
+PbniHash
+--------
 
-PBNIWizard has created this "PbniHash" project for you as a starting point.
+This is free code, released under the MIT license with the hope that
+it could be useful to someone else. There is absolutely NO WARRANTY.
+Please read the license.txt for details.
 
-This file contains a summary of what you will find in each of the files that make up your project.
+PbniHash reuses the libhashish library that can be used under the BSD
+license when the tree hashing algorithm is disabled.
 
-PBNIWizard.vcproj
-    This is the main project file for projects generated using an Application Wizard. 
-    It contains information about the version of the product that generated the file, and 
-    information about the platforms, configurations, and project features selected with the
-    Application Wizard.
+Remarks, comments, questions and bug reports are welcome : drop me a
+message at sebastien.kirche@free.fr
 
-My.cpp
-This is the source file for the PBNI class.
-
-My.h
-This is the header file for the PBNI class.
-
-PbniHash.cpp
-This is the main source file for the PBNI DLL
-
-PbniHash.h
-This is the main header file for the PBNI DLL
-
-/////////////////////////////////////////////////////////////////////////////
-Other notes:
-
-/////////////////////////////////////////////////////////////////////////////
+Please also drop me a note if you use that extension.
