@@ -2,7 +2,6 @@
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include "PbniHash.h"
-#include "libhashish.h"
 
 #ifdef _DEBUG
 #define	VERSION_STR	_T(" (Debug version - ") _T(__DATE__) _T(" ") _T(__TIME__) _T(")")
