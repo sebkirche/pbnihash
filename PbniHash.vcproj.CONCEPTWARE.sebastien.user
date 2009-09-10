@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioUserFile
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	ShowAllFiles="false"
 	>
 	<Configurations>
@@ -9,7 +9,7 @@
 			Name="Debug|Win32"
 			>
 			<DebugSettings
-				Command="&quot;C:\Program Files\Sybase\PowerBuilder 10.5\PB105.EXE&quot;"
+				Command="&quot;C:\Program Files\Sybase\PowerBuilder 11.5\PB115.EXE&quot;"
 				WorkingDirectory="$(ProjectDir)"
 				CommandArguments="/workspace worksp.pbw"
 				Attach="false"
@@ -37,7 +37,7 @@
 			Name="Release|Win32"
 			>
 			<DebugSettings
-				Command="&quot;C:\Program Files\Sybase\PowerBuilder 10.5\PB105.EXE&quot;"
+				Command="&quot;C:\Program Files\Sybase\PowerBuilder 11.5\PB115.EXE&quot;"
 				WorkingDirectory="$(ProjectDir)"
 				CommandArguments="/workspace worksp.pbw"
 				Attach="false"
