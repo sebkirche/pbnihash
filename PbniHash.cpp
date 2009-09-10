@@ -316,10 +316,12 @@ PBXRESULT PbniHash::GetKeys(PBCallInfo *ci)
 
 		hi_iterator_t *iter;
 
-
-		if(HI_SUCCESS == hi_iterator_create(m_hi_handle, &iter))
+		// we always return a new array, it may be empty
+		keys = m_pSession->NewUnboundedSimpleArray(pbvalue_string);
+		
+		if(HI_SUCCESS == hi_iterator_create(m_hi_handle, &iter)) //we can also get HI_ERR_NODATA if empty hash
 		{
-			keys = m_pSession->NewUnboundedSimpleArray(pbvalue_string);
+			
 			while(HI_SUCCESS == hi_iterator_getnext(iter, &data, &key, &keylen))
 			{
 				int keyLen = mbstowcs(NULL, (const char*)key, 0);
@@ -333,9 +335,9 @@ PBXRESULT PbniHash::GetKeys(PBCallInfo *ci)
 				free(wstr);
 			}
 			hi_iterator_fini(iter);
-			ci->pArgs->GetAt(0)->SetArray(keys);
-			ci->returnValue->SetBool(true);
 		}
+		ci->pArgs->GetAt(0)->SetArray(keys);
+		ci->returnValue->SetBool(true);
 	}
 
 	return pbxr;
