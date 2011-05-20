@@ -220,10 +220,6 @@
 				RelativePath=".\PbniHashStr.h"
 				>
 			</File>
-			<File
-				RelativePath=".\resource.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resources"

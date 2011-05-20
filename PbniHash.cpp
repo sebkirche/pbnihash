@@ -1,12 +1,13 @@
 // PbniHash.cpp : PBNI class
 #define _CRT_SECURE_NO_DEPRECATE
 
+#include "main.h"
 #include "PbniHash.h"
 
 #ifdef _DEBUG
-#define	VERSION_STR	_T(" (Debug version - ") _T(__DATE__) _T(" ") _T(__TIME__) _T(")")
+#define	VERSION_STR	_T(PBX_VERSION) _T(" (Debug version - ") _T(__DATE__) _T(" ") _T(__TIME__) _T(")")
 #else
-#define	VERSION_STR	_T(" (Release version - ") _T(__DATE__) _T(" ") _T(__TIME__) _T(")")
+#define	VERSION_STR	_T(PBX_VERSION) _T(" (Release version - ") _T(__DATE__) _T(" ") _T(__TIME__) _T(")")
 #endif
 
 // default constructor
@@ -50,10 +51,9 @@ PBXRESULT PbniHash::Invoke
 
 	switch ( mid )
 	{
-		case mid_Hello:
-			pbxr = this->Hello( ci );
-         break;
-		
+		case mid_GetVersion:
+			pbxr = this->GetVersion( ci );
+			break;
 		case mid_Add:
 			pbxr = this->Add(ci);
 			break;
@@ -98,12 +98,12 @@ void PbniHash::Destroy()
 }
 
 // Method callable from PowerBuilder
-PBXRESULT PbniHash::Hello( PBCallInfo * ci )
+PBXRESULT PbniHash::GetVersion( PBCallInfo * ci )
 {
 	PBXRESULT	pbxr = PBX_OK;
 
 	// return value
-	ci->returnValue->SetString( _T("Hello from PbniHash") VERSION_STR );
+	ci->returnValue->SetString( VERSION_STR );
 
 	return pbxr;
 }

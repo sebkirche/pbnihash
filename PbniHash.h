@@ -29,7 +29,7 @@ public:
 	// PowerBuilder method wrappers
 	enum Function_Entrys
 	{
-		mid_Hello = 0,
+		mid_GetVersion = 0,
 		mid_Add,
 		mid_Get,
 		mid_Remove,
@@ -46,7 +46,7 @@ public:
 
 protected:
  	// methods callable from PowerBuilder
-	PBXRESULT Hello( PBCallInfo * ci );
+	PBXRESULT GetVersion( PBCallInfo * ci );
 	PBXRESULT Add(PBCallInfo * ci);
 	PBXRESULT Get(PBCallInfo * ci);
 	PBXRESULT Remove(PBCallInfo * ci);
