@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="PbniHash"
 	ProjectGUID="{33C1C843-57F6-4411-ABA9-58612B39F11F}"
 	RootNamespace="PbniHash"
@@ -15,7 +15,7 @@
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Debug|Win32"
+			Name="Debug 11.5|Win32"
 			OutputDirectory=".\"
 			IntermediateDirectory=".\obj"
 			ConfigurationType="2"
@@ -98,7 +98,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|Win32"
+			Name="Release 11.5|Win32"
 			OutputDirectory=".\"
 			IntermediateDirectory=".\obj"
 			ConfigurationType="2"
@@ -230,7 +230,11 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\history.txt"
+			RelativePath=".\history_pbnihash.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\license.txt"
 			>
 		</File>
 		<File

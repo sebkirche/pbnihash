@@ -1,5 +1,7 @@
-HISTORY -=- Last edit Time-stamp: <11/07/2009 02:21 sebastien@PC-DEV>
+HISTORY -=- Last edit Time-stamp: <03/07/2011 13:33 Sebastien@PC-DEV>
 =======
+
+2011-07-03 - Added a script to help the packaging and distrbution
 
 2009-07-11 - first public release
 
