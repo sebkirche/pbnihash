@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="PbniHash"
 	ProjectGUID="{33C1C843-57F6-4411-ABA9-58612B39F11F}"
 	RootNamespace="PbniHash"
@@ -40,7 +40,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=".\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 11.5\SDK\PBNI\include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;UNICODE;PBNIHASH_EXPORTS"
+				PreprocessorDefinitions="PBVM_VERSION=115"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				BrowseInformation="0"
@@ -123,7 +123,7 @@
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories=".\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 11.5\SDK\PBNI\include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;UNICODE;PBNIHASH_EXPORTS"
+				PreprocessorDefinitions="PBVM_VERSION=115"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				BrowseInformation="0"
@@ -199,6 +199,10 @@
 				RelativePath=".\PbniHashStr.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\pbserializer.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -218,6 +222,14 @@
 			</File>
 			<File
 				RelativePath=".\PbniHashStr.h"
+				>
+			</File>
+			<File
+				RelativePath=".\pbserializer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\resource.h"
 				>
 			</File>
 		</Filter>

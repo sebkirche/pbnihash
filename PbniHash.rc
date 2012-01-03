@@ -1,19 +1,16 @@
 // Microsoft Visual C++ generated resource script.
 //
-#include "main.h"
+#include "resource.h"
 
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
-#endif //_WIN32
-#endif    // English (U.S.) resources
-/////////////////////////////////////////////////////////////////////////////
-
+#undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
 // French (Luxembourg) resources
@@ -30,8 +27,8 @@ LANGUAGE LANG_FRENCH, SUBLANG_FRENCH_LUXEMBOURG
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION PBX_VERSION_RC
- PRODUCTVERSION PBX_VERSION_RC
+ FILEVERSION 0,9,3,0
+ PRODUCTVERSION 0,9,3,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -48,17 +45,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "PbniHash is built on the Libhashish opensource hash library. See http://libhashish.sourceforge.net/"
             VALUE "FileDescription", "PbniHash Powerbuilder Extension"
-#ifdef _DEBUG
-			" - DEBUG"
-#else
-			""
-#endif
-            VALUE "FileVersion", PBX_VERSION
+            VALUE "FileVersion", "0.9.3"
             VALUE "InternalName", "PbniHash"
-            VALUE "LegalCopyright", "Copyright © 2008, 2009, 2011 Sébastien Kirche"
+            VALUE "LegalCopyright", "Copyright © 2008, 2009, 2011, 2012 Sébastien Kirche"
             VALUE "OriginalFilename", "PbniHash.pbx"
             VALUE "ProductName", "PbniHash Powerbuilder Extension"
-            VALUE "ProductVersion", PBX_VERSION
+            VALUE "ProductVersion", "0.9.3"
         END
     END
     BLOCK "VarFileInfo"
@@ -66,6 +58,26 @@ BEGIN
         VALUE "Translation", 0x140c, 1200
     END
 END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.\0"
+END
+
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\0"
+END
+
+#endif    // APSTUDIO_INVOKED
 
 #endif    // French (Luxembourg) resources
 /////////////////////////////////////////////////////////////////////////////

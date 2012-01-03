@@ -2,7 +2,6 @@
 #ifndef CPBNIHASHSTR_H
 #define CPBNIHASHSTR_H
 
-
 #include <pbext.h>
 #include "libhashish.h"
 
@@ -17,8 +16,6 @@ public:
 	PbniHashStr( IPB_Session * pSession );
 	virtual ~PbniHashStr();
 
-	
-
 	// IPBX_UserObject methods
 	PBXRESULT Invoke
 	(
@@ -32,7 +29,13 @@ public:
    // utility functions
    static bool ToAnsi(LPCWSTR inStr, LPSTR outStr);
    static bool ToUnicode(LPCSTR inStr, LPWSTR outStr);
-
+//callable from outside
+	void ReleaseSessionString(LPCTSTR str){
+#if PBVM_VERSION >=105
+	if(m_pSession && str)
+		m_pSession->ReleaseString(str);
+#endif
+}
 
 	// PowerBuilder method wrappers
 	enum Function_Entrys

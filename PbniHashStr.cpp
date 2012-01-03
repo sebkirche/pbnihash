@@ -4,7 +4,6 @@
 
 #include "PbniHashStr.h"
 
-
 // default constructor
 PbniHashStr::PbniHashStr()
 {
@@ -94,7 +93,7 @@ PBXRESULT PbniHashStr::Add( PBCallInfo * ci )
 		int iKeyLen = wcstombs(NULL, (LPWSTR)tszKey, 0) + 1;
 		LPSTR ansiKey = (LPSTR)malloc(iKeyLen);				//ne pas oublier le free à la fermeture
 		wcstombs(ansiKey, (LPWSTR)(LPWSTR)tszKey, iKeyLen);
-
+		ReleaseSessionString(tszKey);
 
 		////alloc a copy for the string 
 		//int iDataLen = (wcslen(tszData) + 1) * sizeof(WCHAR);
@@ -131,12 +130,16 @@ PBXRESULT PbniHashStr::Get(PBCallInfo *ci)
 		int iKeyLen = wcstombs(NULL, (LPWSTR)tszKey, 0) + 1;
 		LPSTR ansiKey = (LPSTR)malloc(iKeyLen);
 		wcstombs(ansiKey, (LPWSTR)(LPWSTR)tszKey, iKeyLen);		
-		
+		ReleaseSessionString(tszKey);
+
 		//search the key
 		iRet = hi_get_str(m_hi_handle, ansiKey, (void**)&data_ptr);
-		if (HI_ERR_SUCCESS == iRet)
+		if (HI_ERR_SUCCESS == iRet){
 			//ci->returnValue->SetString((LPCWSTR)data_ptr);
-			ci->returnValue->SetString(m_pSession->GetString(((IPB_Value*)data_ptr)->GetString()));
+			LPCTSTR tmp_str = m_pSession->GetString(((IPB_Value*)data_ptr)->GetString());
+			ci->returnValue->SetString(tmp_str);
+			ReleaseSessionString( tmp_str );
+		}
 		else
 			ci->returnValue->SetToNull();
 	}
@@ -163,7 +166,8 @@ PBXRESULT PbniHashStr::Remove(PBCallInfo *ci)
 		int iKeyLen = wcstombs(NULL, (LPWSTR)tszKey, 0) + 1;
 		LPSTR ansiKey = (LPSTR)malloc(iKeyLen);
 		wcstombs(ansiKey, (LPWSTR)(LPWSTR)tszKey, iKeyLen);		
-		
+		ReleaseSessionString(tszKey);
+
 		//search the key
 		iRet = hi_remove_str(m_hi_handle, ansiKey, (void**)&data_ptr);
 		m_pSession->ReleaseValue((IPB_Value*)data_ptr);

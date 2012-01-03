@@ -14,6 +14,12 @@ public:
 	PbniHash();
 	PbniHash( IPB_Session * pSession );
 	virtual ~PbniHash();
+	void ReleaseSessionString(LPCTSTR str){
+#if PBVM_VERSION >=105
+	if(m_pSession && str)
+		m_pSession->ReleaseString(str);
+#endif
+	}
 
 	// IPBX_UserObject methods
 	PBXRESULT Invoke
@@ -40,6 +46,12 @@ public:
 		//mid_UseStrCompare,
 		mid_Purge,
 		mid_Set,
+		mid_GetValues,
+		mid_GetEach,
+		mid_Serialize,
+		mid_UnSerialize,
+		mid_OnSerialize,
+		mid_OnUnSerialize,
 		NO_MORE_METHODS
 	};
 
@@ -57,6 +69,12 @@ protected:
 	PBXRESULT UseStringCompare(PBCallInfo * ci);
 	PBXRESULT Purge(PBCallInfo * ci);
 	PBXRESULT Set(PBCallInfo * ci);
+	PBXRESULT GetValues(PBCallInfo * ci);
+	PBXRESULT GetEach(PBCallInfo * ci);
+	PBXRESULT Serialize(PBCallInfo * ci);
+	PBXRESULT UnSerialize(PBCallInfo * ci);
+	PBXRESULT OnSerialize(PBCallInfo * ci);
+	PBXRESULT OnUnSerialize(PBCallInfo * ci);
 	void DoPurge();
 
 protected:
