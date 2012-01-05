@@ -3,7 +3,6 @@
 
 #include "main.h"
 #include "PbniHash.h"
-#include "pbserializer.h"
 
 #ifdef _DEBUG
 #define	VERSION_STR	_T(PBX_VERSION) _T(" (Debug version - ") _T(__DATE__) _T(" ") _T(__TIME__) _T(")")
@@ -139,6 +138,7 @@ PBXRESULT PbniHash::GetVersion( PBCallInfo * ci )
 
 PBXRESULT PbniHash::Add( PBCallInfo * ci )
 {
+	PROFILE_FUNC();
 	PBXRESULT	pbxr = PBX_OK;
 	int hi_res;
 	int keyLen;
@@ -182,6 +182,7 @@ PBXRESULT PbniHash::Add( PBCallInfo * ci )
 
 PBXRESULT PbniHash::Get(PBCallInfo *ci)
 {
+	PROFILE_FUNC();
 	PBXRESULT	pbxr = PBX_OK;
 	int iRet;
 	PPBDATAREC data_ptr;
@@ -221,6 +222,7 @@ PBXRESULT PbniHash::Get(PBCallInfo *ci)
 
 PBXRESULT PbniHash::Set(PBCallInfo *ci)
 {
+	PROFILE_FUNC();
 	PBXRESULT	pbxr = PBX_OK;
 	int iRet;
 	PPBDATAREC data_ptr;
@@ -269,6 +271,7 @@ PBXRESULT PbniHash::Set(PBCallInfo *ci)
 
 PBXRESULT PbniHash::Remove(PBCallInfo *ci)
 {
+	PROFILE_FUNC();
 	PBXRESULT	pbxr = PBX_OK;
 	int iRet;
 	PPBDATAREC data_ptr;
@@ -306,6 +309,7 @@ PBXRESULT PbniHash::Remove(PBCallInfo *ci)
 
 PBXRESULT PbniHash::Count(PBCallInfo *ci)
 {
+	PROFILE_FUNC();
 	PBXRESULT	pbxr = PBX_OK;
 	pbulong ulRet = hi_no_objects(m_hi_handle);
 	ci->returnValue->SetUlong(ulRet);
@@ -339,6 +343,7 @@ PBXRESULT PbniHash::GetLastErrMsg(PBCallInfo *ci)
 
 PBXRESULT PbniHash::GetKeys(PBCallInfo *ci)
 {
+	PROFILE_FUNC();
 	PBXRESULT pbxr = PBX_OK;
 
 	if(ci->pArgs->GetAt(0)->IsNull() || !ci->pArgs->GetAt(0)->IsArray() || !ci->pArgs->GetAt(0)->IsByRef())
@@ -386,7 +391,7 @@ PBXRESULT PbniHash::GetKeys(PBCallInfo *ci)
 
 
 PBXRESULT PbniHash::Purge(PBCallInfo *ci)
-{
+{	
 	PBXRESULT pbxr = PBX_OK;
 
 	DoPurge();
@@ -395,6 +400,7 @@ PBXRESULT PbniHash::Purge(PBCallInfo *ci)
  
 void PbniHash::DoPurge()
 {
+	PROFILE_FUNC();
 	void *key, *data;
 	unsigned long keylen;
 	int iRet;
@@ -422,6 +428,7 @@ void PbniHash::DoPurge()
 }
 
 PBXRESULT PbniHash::GetValues(PBCallInfo * ci){
+	PROFILE_FUNC();
 	PBXRESULT pbxr = PBX_OK;
 	if( ci->pArgs->GetCount() != 1 ||
 		ci->pArgs->GetAt(0)->IsNull() || !ci->pArgs->GetAt(0)->IsArray() || !ci->pArgs->GetAt(0)->IsByRef())
@@ -456,6 +463,7 @@ PBXRESULT PbniHash::GetValues(PBCallInfo * ci){
 	return pbxr;
 }
 PBXRESULT PbniHash::GetEach(PBCallInfo * ci){
+	PROFILE_FUNC();
 	PBXRESULT pbxr = PBX_OK;
 	if( ci->pArgs->GetCount() != 2 ||
 		ci->pArgs->GetAt(0)->IsNull() || !ci->pArgs->GetAt(0)->IsArray() || !ci->pArgs->GetAt(0)->IsByRef() ||
@@ -511,6 +519,7 @@ PBXRESULT PbniHash::GetEach(PBCallInfo * ci){
 	return pbxr;
 }
 PBXRESULT PbniHash::Serialize(PBCallInfo * ci){
+	PROFILE_FUNC();
 	PBXRESULT pbxr = PBX_OK;
 	//Serialize current object : write object count, then
 	//write keys
@@ -543,8 +552,8 @@ PBXRESULT PbniHash::Serialize(PBCallInfo * ci){
 	return pbxr;
 }
 PBXRESULT PbniHash::UnSerialize(PBCallInfo * ci){
-	PBXRESULT pbxr = PBX_OK;
-	//TODO: implement reverse of Serialize :-p !
+	PROFILE_FUNC();
+	PBXRESULT pbxr = PBX_OK;	
 	pbserializer* serializer = new pbserializer(m_pSession);
 	serializer->set_from_blob( ci->pArgs->GetAt(0)->GetBlob() );
 	bool res = true;

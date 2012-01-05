@@ -4,6 +4,7 @@
 
 #include <pbext.h>
 #include "libhashish.h"
+#include "pbserializer.h"
 
 #define STRING2(x) #x
 #define STRING(x) STRING2(x)

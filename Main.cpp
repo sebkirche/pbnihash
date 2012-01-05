@@ -20,6 +20,10 @@ BOOL APIENTRY DllMain
 	case DLL_THREAD_ATTACH:
 	case DLL_THREAD_DETACH:		
 	case DLL_PROCESS_DETACH:
+#if SHINY_PROFILER==TRUE
+		PROFILER_UPDATE(); // update all profiles
+		PROFILER_OUTPUT("uo_hash.prof"); // print to cout
+#endif
 		break;
 	}
 			

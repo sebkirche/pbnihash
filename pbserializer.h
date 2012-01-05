@@ -2,6 +2,12 @@
 #define C_PBSERIALIZER_H
 
 #include <pbext.h>
+//#define SHINY_PROFILER FALSE
+#if SHINY_PROFILER==TRUE
+#pragma message( "**** PROFILING ENABLED ****" )
+#endif
+#include "Shiny.h"
+
 
 /*
 	Serialize and Unserialize Powerbuilder datatype (simple datatype)
@@ -14,6 +20,8 @@
 #if PBVM_VERSION >= 110 
 #define HAS_RELEASE_STRING
 #endif
+
+#define USE_C_FILE
 
 class pbserializer{
 public:
@@ -36,7 +44,12 @@ public:
 	void write_array();
 	void write_object();
 	void write_string(LPCTSTR str);
+
+#ifdef USE_C_FILE
+	FILE* create_temp_file();
+#else
 	HANDLE create_temp_file();
+#endif
 
 	pbgroup find_pbgroup(LPCTSTR classname);
 	pbblob get_as_blob();
@@ -44,9 +57,14 @@ public:
 
 private:
 	IPB_Session* m_pSession;
+#ifdef USE_C_FILE
+	FILE*  m_pserialized;
+#else
 	HANDLE m_pserialized;
-	bool m_pis_temp;
 	LPCWSTR m_ptempFileName;
+#endif
+	bool m_pis_temp;
+	
 };
 
 #endif

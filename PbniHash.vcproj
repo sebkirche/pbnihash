@@ -39,11 +39,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 11.5\SDK\PBNI\include&quot;"
-				PreprocessorDefinitions="PBVM_VERSION=115"
+				AdditionalIncludeDirectories=".\Shiny\include;C:\Developpement\cpp\Shiny\include;.\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 11.5\SDK\PBNI\include&quot;"
+				PreprocessorDefinitions="PBVM_VERSION=115;SHINY_PROFILER=FALSE"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
-				BrowseInformation="0"
+				BrowseInformation="1"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -121,13 +121,18 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories=".\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 11.5\SDK\PBNI\include&quot;"
-				PreprocessorDefinitions="PBVM_VERSION=115"
+				Optimization="3"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="false"
+				AdditionalIncludeDirectories=".\Shiny\include;.\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 11.5\SDK\PBNI\include&quot;"
+				PreprocessorDefinitions="PBVM_VERSION=115;SHINY_PROFILER=FALSE"
 				RuntimeLibrary="0"
+				FloatingPointModel="0"
 				UsePrecompiledHeader="0"
 				BrowseInformation="0"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -147,10 +152,103 @@
 				AdditionalLibraryDirectories=".\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 11.5\SDK\PBNI\lib&quot;"
 				IgnoreAllDefaultLibraries="true"
 				IgnoreDefaultLibraryNames="libc.lib "
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
+				GenerateMapFile="false"
 				SubSystem="2"
+				LinkTimeCodeGeneration="0"
 				ImportLibrary="$(OutDir)/PbniHash.lib"
 				TargetMachine="1"
+				Profile="false"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Creating the PBD file"
+				CommandLine="pbx2pbd115 $(TargetName).pbd $(TargetFileName)"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release 11.5 (Profiling)|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="3"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="false"
+				AdditionalIncludeDirectories=".\Shiny\include;.\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 11.5\SDK\PBNI\include&quot;"
+				PreprocessorDefinitions="PBVM_VERSION=115;SHINY_PROFILER=TRUE"
+				RuntimeLibrary="0"
+				FloatingPointModel="0"
+				UsePrecompiledHeader="0"
+				BrowseInformation="0"
+				DebugInformationFormat="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_UNICODE;UNICODE;NDEBUG"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="libhashish.lib pbni.lib libcmt.lib libcpmt.lib Shiny.lib"
+				OutputFile="$(OutDir)\PbniHash.pbx"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories=".\Shiny\lib;.\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 11.5\SDK\PBNI\lib&quot;"
+				IgnoreAllDefaultLibraries="true"
+				IgnoreDefaultLibraryNames="libc.lib "
+				GenerateDebugInformation="false"
+				GenerateMapFile="false"
+				SubSystem="2"
+				LinkTimeCodeGeneration="0"
+				ImportLibrary="$(OutDir)/PbniHash.lib"
+				TargetMachine="1"
+				Profile="false"
 			/>
 			<Tool
 				Name="VCALinkTool"
