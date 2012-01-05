@@ -10,11 +10,14 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug 11.5|Win32 = Debug 11.5|Win32
+		Release 11.5 (Profiling)|Win32 = Release 11.5 (Profiling)|Win32
 		Release 11.5|Win32 = Release 11.5|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{33C1C843-57F6-4411-ABA9-58612B39F11F}.Debug 11.5|Win32.ActiveCfg = Debug 11.5|Win32
 		{33C1C843-57F6-4411-ABA9-58612B39F11F}.Debug 11.5|Win32.Build.0 = Debug 11.5|Win32
+		{33C1C843-57F6-4411-ABA9-58612B39F11F}.Release 11.5 (Profiling)|Win32.ActiveCfg = Release 11.5 (Profiling)|Win32
+		{33C1C843-57F6-4411-ABA9-58612B39F11F}.Release 11.5 (Profiling)|Win32.Build.0 = Release 11.5 (Profiling)|Win32
 		{33C1C843-57F6-4411-ABA9-58612B39F11F}.Release 11.5|Win32.ActiveCfg = Release 11.5|Win32
 		{33C1C843-57F6-4411-ABA9-58612B39F11F}.Release 11.5|Win32.Build.0 = Release 11.5|Win32
 	EndGlobalSection
