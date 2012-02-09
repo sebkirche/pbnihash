@@ -37,93 +37,114 @@ struct pbs_cache_entry{
 };
 */
 
-#ifdef USE_C_FILE
-FILE* pbserializer::create_temp_file(){
-	PROFILE_FUNC();
-	return m_pserialized = tmpfile();
-}
-#else
-HANDLE pbserializer::create_temp_file(){
-	PROFILE_FUNC();
-	HANDLE hTempFile = INVALID_HANDLE_VALUE;
-	TCHAR szTempFileName[MAX_PATH];  
-    TCHAR lpTempPathBuffer[MAX_PATH];
-	DWORD dwRetVal = 0;
-	UINT uRetVal   = 0;
-	dwRetVal = GetTempPath(MAX_PATH,          // length of the buffer
-                           lpTempPathBuffer); // buffer for path 
-    if (dwRetVal > MAX_PATH || (dwRetVal == 0))
-		return hTempFile;
-	uRetVal = GetTempFileName(lpTempPathBuffer,		// directory for tmp files
-                              TEXT("pbserializer"), // temp file name prefix 
-                              0,					// create unique name 
-                              szTempFileName);		// buffer for name 
-    if (uRetVal == 0)
-		return hTempFile;
-
-	hTempFile = CreateFile((LPTSTR) szTempFileName,				// file name 
-                           GENERIC_WRITE | GENERIC_READ,        // open for write 
-                           0,                    // do not share 
-                           NULL,                 // default security 
-                           CREATE_ALWAYS,        // overwrite existing
-                           FILE_ATTRIBUTE_NORMAL,// normal file  (FILE_ATTRIBUTE_TEMPORARY)
-                           NULL);                // no template 
-	if(hTempFile!=INVALID_HANDLE_VALUE){
-		if(m_ptempFileName!=NULL){
-			free((void*)m_ptempFileName);
-			m_ptempFileName = NULL;
+#ifndef USE_MEM
+	#ifdef USE_C_FILE
+	FILE* pbserializer::init_datastream(){
+		PROFILE_FUNC();
+		char* tempname = NULL;
+		if(tempname =  _tempnam(".\\temp", "pbs")){
+			m_pserialized = fopen(tempname, "w+b");
 		}
-		m_pserialized = hTempFile;
-		m_ptempFileName = _tcsdup( szTempFileName );
-		m_pis_temp = true;
+		return m_pserialized;
+		//return m_pserialized = tmpfile();
 	}
-	return (DWORD) hTempFile;
-}
+	#else
+	HANDLE pbserializer::init_datastream(){
+		PROFILE_FUNC();
+		HANDLE hTempFile = INVALID_HANDLE_VALUE;
+		TCHAR szTempFileName[MAX_PATH];  
+		TCHAR lpTempPathBuffer[MAX_PATH];
+		DWORD dwRetVal = 0;
+		UINT uRetVal   = 0;
+		dwRetVal = GetTempPath(MAX_PATH,          // length of the buffer
+							   lpTempPathBuffer); // buffer for path 
+		if (dwRetVal > MAX_PATH || (dwRetVal == 0))
+			return hTempFile;
+		uRetVal = GetTempFileName(lpTempPathBuffer,		// directory for tmp files
+								  TEXT("pbserializer"), // temp file name prefix 
+								  0,					// create unique name 
+								  szTempFileName);		// buffer for name 
+		if (uRetVal == 0)
+			return hTempFile;
+
+		hTempFile = CreateFile((LPTSTR) szTempFileName,				// file name 
+							   GENERIC_WRITE | GENERIC_READ,        // open for write 
+							   0,                    // do not share 
+							   NULL,                 // default security 
+							   CREATE_ALWAYS,        // overwrite existing
+							   FILE_ATTRIBUTE_NORMAL,// normal file  (FILE_ATTRIBUTE_TEMPORARY)
+							   NULL);                // no template 
+		if(hTempFile!=INVALID_HANDLE_VALUE){
+			if(m_ptempFileName!=NULL){
+				free((void*)m_ptempFileName);
+				m_ptempFileName = NULL;
+			}
+			m_pserialized = hTempFile;
+			m_ptempFileName = _tcsdup( szTempFileName );
+			m_pis_temp = true;
+		}
+		return (DWORD) hTempFile;
+	}
+	#endif
 #endif
 
 pbserializer::pbserializer(){
 	PROFILE_FUNC();
-
 	m_pSession = NULL;
-#ifdef USE_C_FILE
-	m_pserialized = NULL;
+#ifdef USE_MEM
+	m_pserialized = new _data_stream();
 #else
-	m_pserialized = INVALID_HANDLE_VALUE;
-	m_ptempFileName = NULL;
+	#ifdef USE_C_FILE
+		m_pserialized = NULL;
+	#else
+		m_pserialized = INVALID_HANDLE_VALUE;
+		m_ptempFileName = NULL;
+		m_pis_temp = false;	
+	#endif
 #endif
-	m_pis_temp = false;	
 }
 
 pbserializer::~pbserializer(){
 	PROFILE_FUNC();
 
 	if(m_pserialized){
-#ifdef USE_C_FILE
-		fclose(m_pserialized);
+#ifdef USE_MEM
+		delete m_pserialized;
 #else
-		CloseHandle(m_pserialized);
+	#ifdef USE_C_FILE
+			fclose(m_pserialized);
+	#else
+			CloseHandle(m_pserialized);
+	#endif
 #endif
 	}
-#ifndef USE_C_FILE
-	if(m_pis_temp && m_ptempFileName){
-		DeleteFile(m_ptempFileName);
-	}
-	if (m_ptempFileName){
-		free( (void*)m_ptempFileName );
-	}
+#ifdef USE_MEM
+	//no special hack here
+#else
+	#ifndef USE_C_FILE
+		if(m_pis_temp && m_ptempFileName){
+			DeleteFile(m_ptempFileName);
+		}
+		if (m_ptempFileName){
+			free( (void*)m_ptempFileName );
+		}
+	#endif
 #endif
 }
 
 pbserializer::pbserializer(IPB_Session* session) : m_pSession(session){
 	PROFILE_FUNC();
-#ifdef USE_C_FILE
-	m_pserialized = NULL;
+#ifdef USE_MEM
+	m_pserialized = new _data_stream();
 #else
-	m_pserialized = INVALID_HANDLE_VALUE;
-	m_ptempFileName = NULL;
+	#ifdef USE_C_FILE
+		m_pserialized = NULL;
+	#else
+		m_pserialized = INVALID_HANDLE_VALUE;
+		m_ptempFileName = NULL;
+		m_pis_temp = false;
+	#endif	
 #endif
-	m_pis_temp = false;
-	
 }
 
 pbserializer::pbserializer(IPB_Session* session, void* serialize_source){
@@ -132,32 +153,44 @@ pbserializer::pbserializer(IPB_Session* session, void* serialize_source){
 	//Allow to create a pbserializer object from an opened stream
 	m_pSession = session;
 	//TODO: determine if this is a FileName, Blob or a FileHandle !
-#ifdef USE_C_FILE
-	m_pserialized = (FILE*)serialize_source;
+#ifdef USE_MEM
+	m_pserialized = (_data_stream*)serialize_source;
 #else
-	m_pserialized = (HANDLE)serialize_source;
+	#ifdef USE_C_FILE
+		m_pserialized = (FILE*)serialize_source;
+	#else
+		m_pserialized = (HANDLE)serialize_source;
+	#endif
 #endif
 }
 
 bool pbserializer::write(DWORD buffersize, void* bufferptr){
 	PROFILE_FUNC();
-#ifdef USE_C_FILE
-	if(m_pserialized==NULL){
-		//create a tempfile
-		create_temp_file();
-	}
+#ifdef USE_MEM
+	if(m_pserialized==NULL)
+		m_pserialized = new _data_stream();
 	if(m_pserialized==NULL)
 		return false;
-	return fwrite(bufferptr, (size_t)buffersize, 1, m_pserialized) > 0;
+	return m_pserialized->write(bufferptr,buffersize) == buffersize;
 #else
-	if(m_pserialized==INVALID_HANDLE_VALUE){
-		//create a tempfile
-		create_temp_file();
-	}
-	if(m_pserialized==INVALID_HANDLE_VALUE)
-		return false;
-	DWORD writtenBytes = 0;
-	return WriteFile(m_pserialized, /*LPCVOID*/bufferptr, /*DWORD*/ buffersize, &writtenBytes, /*overlapped struct*/NULL);
+	#ifdef USE_C_FILE
+		if(m_pserialized==NULL){
+			//create a tempfile
+			init_datastream();
+		}
+		if(m_pserialized==NULL)
+			return false;
+		return fwrite(bufferptr, (size_t)buffersize, 1, m_pserialized) > 0;
+	#else
+		if(m_pserialized==INVALID_HANDLE_VALUE){
+			//create a tempfile
+			init_datastream();
+		}
+		if(m_pserialized==INVALID_HANDLE_VALUE)
+			return false;
+		DWORD writtenBytes = 0;
+		return WriteFile(m_pserialized, /*LPCVOID*/bufferptr, /*DWORD*/ buffersize, &writtenBytes, /*overlapped struct*/NULL);
+	#endif
 #endif
 }
 
@@ -202,18 +235,22 @@ void pbserializer::write_string(LPCTSTR str){
 
 bool pbserializer::read(DWORD buffersize, void* bufferptr){
 	PROFILE_FUNC();
-#ifdef USE_C_FILE
-	return fread(bufferptr, (size_t)buffersize, 1, m_pserialized) > 0;
+#ifdef USE_MEM
+	return m_pserialized->read(bufferptr,buffersize) == buffersize;
 #else
-	if(m_pserialized==INVALID_HANDLE_VALUE || buffersize == 0){
-		return false;
-	}
-	if(bufferptr==NULL){
-		return false;
-	}
-	DWORD readbytes = 0;
-	ReadFile(m_pserialized, bufferptr, buffersize, &readbytes, NULL);
-	return readbytes == buffersize;
+	#ifdef USE_C_FILE
+		return fread(bufferptr, (size_t)buffersize, 1, m_pserialized) > 0;
+	#else
+		if(m_pserialized==INVALID_HANDLE_VALUE || buffersize == 0){
+			return false;
+		}
+		if(bufferptr==NULL){
+			return false;
+		}
+		DWORD readbytes = 0;
+		ReadFile(m_pserialized, bufferptr, buffersize, &readbytes, NULL);
+		return readbytes == buffersize;
+	#endif
 #endif
 }
 pbuint pbserializer::read_type(){
@@ -459,32 +496,40 @@ bool pbserializer::serialize(IPB_Value* to_serialize){
 	return true;
 }
 
-bool pbserializer::unserialize(IPB_Value* to_unserialize){
+IPB_Value* pbserializer::unserialize(){
 	PROFILE_FUNC();
 
-	bool res = true;
+	IPB_Value* returnedValue = NULL;
 	BYTE cardinality = read_cardinality();
 	if(cardinality == 0){
-		to_unserialize->SetToNull();
+		returnedValue = NULL;
 	}
 	else if(cardinality == 1){
 		//scalar
 		pbuint type = read_type();
-		res = unserialize_type( type, to_unserialize);
+		returnedValue = unserialize_type( type);
 	}
 	else if(cardinality == 2){
 		//array
 		//NOT Implemented yet
-		res = false;
+		returnedValue = NULL;
 	}
 	else if(cardinality == 3){
 		//object
-		res = unserialize_type( 65535, to_unserialize);
+		returnedValue = unserialize_type( 65535);
 	}
-	return res;
+	return returnedValue;
 }
-bool pbserializer::unserialize_type( pbuint type, IPB_Value* to_unserialize){
+IPB_Value* pbserializer::unserialize_type( pbuint type ){
 	PROFILE_FUNC();
+	PBXRESULT res;
+	pblong ldim[1] = { 1 };
+	pbarray larr = NULL;
+	IPB_Value* to_unserialize;
+	if(type!=65535){
+		//create depending on datatype
+		larr = m_pSession->NewUnboundedSimpleArray(type);
+	}
 
 	switch(type){
 		case 65535:	//object hack
@@ -495,36 +540,41 @@ bool pbserializer::unserialize_type( pbuint type, IPB_Value* to_unserialize){
 				pbobject obj = m_pSession->NewObject(cls);
 				free((void*)classname);
 				if(obj==NULL){
-					return false;
+					return NULL;
 				}
 				//then invoke ue_unserialize with the given blob (still to be read)
 				BYTE data_cardinality = read_cardinality();
 				if(data_cardinality!=1){
-					return false;
+					return NULL;
 				}
 				pbuint data_type = read_type();
 				if(data_type != pbvalue_blob){
-					return false;
+					return NULL;
 				}
 				pbmethodID mid_unserialize = m_pSession->GetMethodID( cls, L"on_unserialize", PBRT_EVENT, L"BO");
 				if(mid_unserialize == kUndefinedMethodID){
-					return false;
+					return NULL;
 				}
 				PBCallInfo ci;
 				m_pSession->InitCallInfo(cls, mid_unserialize, &ci);
-				unserialize_type(data_type, ci.pArgs->GetAt(0) );	//must be a blob
+				IPB_Value* value = unserialize_type(data_type);	//must be a blob
+				ci.pArgs->GetAt(0)->SetBlob( value->GetBlob() );
 				m_pSession->InvokeObjectFunction(obj, mid_unserialize, &ci);
 				pbboolean res = ci.returnValue->GetBool();
 				m_pSession->FreeCallInfo(&ci);
-				to_unserialize->SetObject(obj);
-				return res;
+				m_pSession->ReleaseValue(value);
+				//to_unserialize->SetObject(obj);
+				larr = m_pSession->NewUnboundedObjectArray(cls);
+				res = m_pSession->SetObjectArrayItem(larr, ldim, obj);
+				to_unserialize = m_pSession->AcquireArrayItemValue(larr, ldim);
+				return to_unserialize;
 			}
 			break;
 		case pbvalue_any:
 			{
 				//why the hell we goes here ?
 				//must never happend, at least in my mind and at this time-point :-p
-				return false;
+				m_pSession->SetArrayItemToNull( larr, ldim);
 			}
 			break;
 		case pbvalue_blob:
@@ -534,23 +584,24 @@ bool pbserializer::unserialize_type( pbuint type, IPB_Value* to_unserialize){
 				read(sizeof(DWORD), &size);
 				buffer = malloc((size_t)size);
 				read(size,buffer);
-				to_unserialize->SetBlob( m_pSession->NewBlob(buffer, size) );
+				pbblob value = m_pSession->NewBlob(buffer, size);
+				m_pSession->SetBlobArrayItem( larr, ldim, value);	//to_unserialize->SetBlob( value );
 				free(buffer);
 			}
 			break;
 		case pbvalue_boolean:
 			{
-				pbboolean boolean;
-				read(sizeof(pbboolean), &boolean);
-				to_unserialize->SetBool( boolean );
+				pbboolean value;
+				read(sizeof(pbboolean), &value);
+				m_pSession->SetBoolArrayItem( larr, ldim, value);	//to_unserialize->SetBool( value );
 			}
 			break;
 #ifdef HAS_PBBYTE
 		case pbvalue_byte:
 			{
-				pbbyte byte;
-				read(sizeof(pbbyte), &byte);
-				to_unserialize->SetByte( byte );
+				pbbyte value;
+				read(sizeof(pbbyte), &value);
+				m_pSession->SetByteArrayItem( larr, ldim, value);	//to_unserialize->SetByte( value );
 			}
 			break;
 #endif
@@ -558,7 +609,7 @@ bool pbserializer::unserialize_type( pbuint type, IPB_Value* to_unserialize){
 			{
 				pbchar value;
 				read(sizeof(value), &value);
-				to_unserialize->SetChar( value );
+				m_pSession->SetCharArrayItem( larr, ldim, value);	//to_unserialize->SetChar( value );
 			}
 			break;
 		case pbvalue_date:
@@ -569,7 +620,7 @@ bool pbserializer::unserialize_type( pbuint type, IPB_Value* to_unserialize){
 				read(sizeof(pbuint), &month);
 				read(sizeof(pbuint), &day);
 				m_pSession->SetDate(value, year, month, day);
-				to_unserialize->SetDate(value);
+				m_pSession->SetDateArrayItem( larr, ldim, value);	//to_unserialize->SetDate(value);
 			}
 			break;
 		case pbvalue_datetime:
@@ -584,7 +635,7 @@ bool pbserializer::unserialize_type( pbuint type, IPB_Value* to_unserialize){
 				read(sizeof(pbuint), &minute);
 				read(sizeof(pbdouble), &second);
 				m_pSession->SetDateTime(value, year, month, day, hour, minute, second);
-				to_unserialize->SetDateTime(value);
+				m_pSession->SetDateTimeArrayItem( larr, ldim, value);	//to_unserialize->SetDateTime(value);
 			}
 			break;
 		case pbvalue_dec:
@@ -593,48 +644,52 @@ bool pbserializer::unserialize_type( pbuint type, IPB_Value* to_unserialize){
 				LPCTSTR str = read_string();
 				m_pSession->SetDecimal(value, str);
 				free((void*)str);
-				to_unserialize->SetDecimal(value);
+				m_pSession->SetDecArrayItem( larr, ldim, value);	//to_unserialize->SetDecimal(value);
 			}
 			break;
 		case pbvalue_double:
 			{
 				pbdouble value;
 				read(sizeof(value), &value);
-				to_unserialize->SetDouble( value );
+				res = m_pSession->SetDoubleArrayItem(larr, ldim, value);	//to_unserialize->SetDouble( value );
 			}
 			break;
 		case pbvalue_int:
 			{
 				pbint value;
 				read(sizeof(value), &value);
-				to_unserialize->SetInt( value );
+				m_pSession->SetIntArrayItem( larr, ldim, value);	//to_unserialize->SetInt( value );
 			}
 			break;
 		case pbvalue_long:
 			{
 				pblong value;
 				read(sizeof(value), &value);
-				to_unserialize->SetLong( value );
+				m_pSession->SetLongArrayItem( larr, ldim, value);	//to_unserialize->SetLong( value );
 			}
 			break;
 		case pbvalue_longlong:
 			{
 				pblonglong value;
 				read(sizeof(value), &value);
-				to_unserialize->SetLongLong( value );
+				m_pSession->SetLongLongArrayItem( larr, ldim, value);	//to_unserialize->SetLongLong( value );
 			}
 			break;
 		case pbvalue_real:
 			{
 				pbreal value;
 				read(sizeof(value), &value);
-				to_unserialize->SetReal( value );
+				m_pSession->SetRealArrayItem( larr, ldim, value);	//to_unserialize->SetReal( value );
 			}
 			break;
 		case pbvalue_string:
 			{
 				LPCTSTR str = read_string();
-				to_unserialize->SetString(str);
+				res = m_pSession->SetStringArrayItem(larr, ldim,str);
+				//Does my array is automatically destroy by garbage collector ?
+				//Hoping that is it the case !!!
+				//Without array + dim it make CRASH pbvm !
+				//to_unserialize->SetString(str);
 				free((void*)str);
 			}
 			break;
@@ -647,30 +702,31 @@ bool pbserializer::unserialize_type( pbuint type, IPB_Value* to_unserialize){
 				read(sizeof(pbuint), &minute);
 				read(sizeof(pbdouble), &second);
 				m_pSession->SetTime(value, hour, minute, second);
-				to_unserialize->SetTime(value);
+				m_pSession->SetTimeArrayItem( larr, ldim, value);	//to_unserialize->SetTime(value);
 			}
 			break;
 		case pbvalue_uint:
 			{
 				pbuint value;
 				read(sizeof(value), &value);
-				to_unserialize->SetUint( value );
+				m_pSession->SetUintArrayItem( larr, ldim, value);	//to_unserialize->SetUint( value );
 			}
 			break;
 		case pbvalue_ulong:
 			{
 				pbulong value;
 				read(sizeof(value), &value);
-				to_unserialize->SetUlong( value );
+				m_pSession->SetUlongArrayItem( larr, ldim, value);	//to_unserialize->SetUlong( value );
 			}
 			break;
 		default:
 			{
-				return false;
+				m_pSession->SetArrayItemToNull( larr, ldim);
 			}
 			break;
 	}
-	return true;
+	to_unserialize = m_pSession->AcquireArrayItemValue(larr, ldim);
+	return to_unserialize;
 }
 
 pbblob pbserializer::get_as_blob(){
@@ -678,28 +734,35 @@ pbblob pbserializer::get_as_blob(){
 
 	void* buffer = NULL;
 	pblong length = 0;
-#ifdef USE_C_FILE
-	if(m_pserialized!=NULL){
-		fpos_t file_length=0;
-		size_t readlength=0;
-		fseek(m_pserialized,0, SEEK_END);
-		fgetpos(m_pserialized,&file_length);
-		fseek(m_pserialized,0, SEEK_SET);
-		buffer = malloc( file_length );	//but we malloc it, so it is not a good idea!!!
-		readlength = fread(buffer, file_length, 1, m_pserialized);
-		length = (pblong)file_length;
+#ifdef USE_MEM
+	if(m_pserialized){
+		buffer = malloc( length = (pblong)m_pserialized->length() );	//but we malloc it, so it is not a good idea!!!
+		m_pserialized->read(buffer, length);
 	}
 #else
-	if(m_pserialized!=INVALID_HANDLE_VALUE){
-		DWORD file_length, fl_hi, fl_lo, readlength = 0;
-		SetEndOfFile(m_pserialized);
-		fl_lo = GetFileSize(m_pserialized, &fl_hi);
-		file_length = fl_lo;	//don't take care about fl_hi : Do not handle more than 4Gb files !
-		buffer = malloc( file_length );	//but we malloc it, so it is not a good idea!!!
-		SetFilePointer(m_pserialized, 0, NULL, FILE_BEGIN);
-		ReadFile(m_pserialized, buffer, file_length, &readlength, NULL);
-		length=(pblong)file_length;
-	}
+	#ifdef USE_C_FILE
+		if(m_pserialized!=NULL){
+			fpos_t file_length=0;
+			size_t readlength=0;
+			fseek(m_pserialized,0, SEEK_END);
+			fgetpos(m_pserialized,&file_length);
+			fseek(m_pserialized,0, SEEK_SET);
+			buffer = malloc( file_length );	//but we malloc it, so it is not a good idea!!!
+			readlength = fread(buffer, file_length, 1, m_pserialized);
+			length = (pblong)file_length;
+		}
+	#else
+		if(m_pserialized!=INVALID_HANDLE_VALUE){
+			DWORD file_length, fl_hi, fl_lo, readlength = 0;
+			SetEndOfFile(m_pserialized);
+			fl_lo = GetFileSize(m_pserialized, &fl_hi);
+			file_length = fl_lo;	//don't take care about fl_hi : Do not handle more than 4Gb files !
+			buffer = malloc( file_length );	//but we malloc it, so it is not a good idea!!!
+			SetFilePointer(m_pserialized, 0, NULL, FILE_BEGIN);
+			ReadFile(m_pserialized, buffer, file_length, &readlength, NULL);
+			length=(pblong)file_length;
+		}
+	#endif
 #endif
 	pbblob blob = m_pSession->NewBlob( buffer, length );
 	if(buffer){
@@ -708,13 +771,21 @@ pbblob pbserializer::get_as_blob(){
 	return blob;
 }
 
-void pbserializer::set_from_blob(pbblob serialized_data){
+bool pbserializer::set_from_blob(pbblob serialized_data){
 	PROFILE_FUNC();
 
+#ifdef USE_MEM
+	if(m_pserialized==NULL)
+		return false;
+	m_pserialized->write(m_pSession->GetBlob(serialized_data),m_pSession->GetBlobLength(serialized_data));
+	m_pserialized->move(0);
+#else
 	//create temp file
-	create_temp_file();
-#ifdef USE_C_FILE
-	if (m_pserialized!=NULL){
+	init_datastream();
+	#ifdef USE_C_FILE
+		if (m_pserialized==NULL){
+			return false;
+		}
 		//write blob data into it
 		void* buffer = NULL;
 		DWORD length = 0;
@@ -724,9 +795,10 @@ void pbserializer::set_from_blob(pbblob serialized_data){
 		writtenbytes = fwrite(buffer, length, 1, m_pserialized);
 		//the rewind file
 		fseek(m_pserialized, 0, SEEK_SET);
-	}
-#else
-	if (m_pserialized!=INVALID_HANDLE_VALUE){
+	#else
+		if (m_pserialized==INVALID_HANDLE_VALUE){
+			return false;
+		}
 		//write blob data into it
 		void* buffer = NULL;
 		DWORD length = 0, writtenbytes = 0;
@@ -735,9 +807,10 @@ void pbserializer::set_from_blob(pbblob serialized_data){
 		WriteFile( m_pserialized, buffer, length, &writtenbytes, NULL);
 		//the rewind file
 		SetFilePointer(m_pserialized, 0, NULL, FILE_BEGIN);
-	}
+	#endif
 #endif
 	//Now the object is ready to unserialize what you want !
+	return true;
 }
 
 pbgroup pbserializer::find_pbgroup(LPCTSTR classname){

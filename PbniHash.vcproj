@@ -66,6 +66,8 @@
 				IgnoreDefaultLibraryNames="libc.lib "
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)\PbniHash.pdb"
+				GenerateMapFile="true"
+				MapExports="true"
 				SubSystem="2"
 				ImportLibrary="$(OutDir)/PbniHash.lib"
 				TargetMachine="1"
@@ -349,6 +351,10 @@
 		</File>
 		<File
 			RelativePath=".\ReadMe.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\resource"
 			>
 		</File>
 	</Files>

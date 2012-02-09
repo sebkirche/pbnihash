@@ -430,8 +430,7 @@ void PbniHash::DoPurge()
 PBXRESULT PbniHash::GetValues(PBCallInfo * ci){
 	PROFILE_FUNC();
 	PBXRESULT pbxr = PBX_OK;
-	if( ci->pArgs->GetCount() != 1 ||
-		ci->pArgs->GetAt(0)->IsNull() || !ci->pArgs->GetAt(0)->IsArray() || !ci->pArgs->GetAt(0)->IsByRef())
+	if( ci->pArgs->GetCount() != 1 || !ci->pArgs->GetAt(0)->IsArray() || !ci->pArgs->GetAt(0)->IsByRef())
 	{
 		//there must be two reference to array
 		ci->returnValue->SetBool(false);
@@ -555,19 +554,19 @@ PBXRESULT PbniHash::UnSerialize(PBCallInfo * ci){
 	PROFILE_FUNC();
 	PBXRESULT pbxr = PBX_OK;	
 	pbserializer* serializer = new pbserializer(m_pSession);
-	serializer->set_from_blob( ci->pArgs->GetAt(0)->GetBlob() );
+	if(!serializer->set_from_blob( ci->pArgs->GetAt(0)->GetBlob() )){
+		ci->returnValue->SetBool( false );
+		delete serializer;
+		return pbxr;
+	}
 	bool res = true;
 	DWORD i, entries = 0;
 	serializer->read( sizeof(DWORD), &entries);
-	pbarray hackArray = m_pSession->NewUnboundedSimpleArray(pbvalue_any);
-	pbboolean isnull;
-	pblong dim[1] = {1};
-	m_pSession->SetArrayItemToNull(hackArray, (pblong*)&entries);	//pre allocate array
+
 	for(i=0;i<entries;i++){
 		LPCTSTR tszKey = serializer->read_string();
-		IPB_Value * value = m_pSession->GetPBAnyArrayItem(hackArray,dim,isnull);	//Shit: new IPB_Value();
-		dim[0]++;
-		if(!serializer->unserialize( value )){
+		IPB_Value * value = NULL;
+		if(!(value=serializer->unserialize())){
 			res = false;
 			break;
 		}
@@ -576,10 +575,10 @@ PBXRESULT PbniHash::UnSerialize(PBCallInfo * ci){
 		char *localKey = (char*)malloc(keyLen);
 		wcstombs(localKey, (LPWSTR)tszKey, keyLen);
 		free((void*)tszKey);	//allocated by read_string()
-		IPB_Value *data = m_pSession->AcquireValue(value);
+		
 		PPBDATAREC dataRecord = (PPBDATAREC)malloc(sizeof(PBDATAREC));
 		dataRecord->key = localKey;
-		dataRecord->data = data;
+		dataRecord->data = value;
 		int hi_res = hi_insert(m_hi_handle, (void*)dataRecord->key, strlen(localKey), dataRecord /*tszData*/);
 		if (HI_SUCCESS != hi_res){
 			res = false;
@@ -588,7 +587,6 @@ PBXRESULT PbniHash::UnSerialize(PBCallInfo * ci){
 	}
 	//hackArray :	It is supposed to be lost when it goes out of scope.
 	//				I really hope that is was implemented in PBVM!
-
 	ci->returnValue->SetBool( res );
 	delete serializer;
 	return pbxr;
