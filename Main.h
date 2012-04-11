@@ -8,7 +8,7 @@
 
 #include <windows.h>
 
-#define PBX_VERSION "0.9.3"
-#define PBX_VERSION_RC 0,9,3,0
+#define PBX_VERSION "0.9.4"
+#define PBX_VERSION_RC 0,9,4,0
 
 #endif // !defined(MAIN_H)

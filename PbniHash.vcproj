@@ -141,7 +141,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_UNICODE;UNICODE;NDEBUG"
+				PreprocessorDefinitions="_UNICODE;UNICODE;NDEBUG;PBVM_VERSION=115"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"

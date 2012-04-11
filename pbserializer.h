@@ -25,22 +25,11 @@
 #define HAS_RELEASE_STRING
 #endif
 
-//#define USE_C_FILE
-#define USE_MEM
-
 class _data_stream{
 public:
 	_data_stream(){
-#ifdef USE_MEM
 		m_buffer = NULL;
 		m_cursor = m_size = 0;
-#else
-	#ifdef USE_C_FILE
-		FILE* init_datastream();
-	#else
-		HANDLE init_datastream();
-	#endif
-#endif
 	}
 	~_data_stream(){
 		if(m_buffer){
@@ -83,19 +72,9 @@ public:
 		return bytesToWrite;
 	}
 private:
-#ifdef USE_MEM
 	void* m_buffer;
 	DWORD m_cursor;
 	DWORD m_size;
-#else
-	#ifdef USE_C_FILE
-		FILE*  m_pserialized;
-	#else
-		HANDLE m_pserialized;
-		LPCWSTR m_ptempFileName;
-		bool m_pis_temp;
-	#endif
-#endif
 };
 
 class pbserializer{

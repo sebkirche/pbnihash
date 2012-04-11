@@ -4,6 +4,10 @@
 #include "main.h"
 #include "PbniHash.h"
 
+#define STRING2(x) #x
+#define STRING(x) STRING2(x)
+#pragma message( "**** Using PBVM " STRING(PBVM_VERSION) " ****" )
+
 #ifdef _DEBUG
 #define	VERSION_STR	_T(PBX_VERSION) _T(" (Debug version - ") _T(__DATE__) _T(" ") _T(__TIME__) _T(")")
 #else

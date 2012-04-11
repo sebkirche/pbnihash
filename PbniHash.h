@@ -6,10 +6,6 @@
 #include "libhashish.h"
 #include "pbserializer.h"
 
-#define STRING2(x) #x
-#define STRING(x) STRING2(x)
-#pragma message( "**** Using PBVM " STRING(PBVM_VERSION) " ****" )
-
 #define TABLE_SIZE 100
 
 class PbniHash : public IPBX_NonVisualObject

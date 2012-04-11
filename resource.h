@@ -1194,9 +1194,13 @@
 #define SC_MONITORPOWER                 0xF170
 #define SC_CONTEXTHELP                  0xF180
 #define LVS_TYPESTYLEMASK               0xfc00
+/*
+//Comment to avoid messages : 
+//C:\Program Files\Microsoft Visual Studio 8\VC\PlatformSDK\include/winuser.rh(413) : warning RC4005: 'PWR_FAIL' : redefinition
 #define HTERROR                         -2
 #define PWR_FAIL                        -1
 #define HTTRANSPARENT                   -1
+*/
 
 // Next default values for new objects
 // 
