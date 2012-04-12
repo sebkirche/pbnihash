@@ -436,8 +436,8 @@ PBXRESULT PbniHash::GetValues(PBCallInfo * ci){
 	PBXRESULT pbxr = PBX_OK;
 	if( ci->pArgs->GetCount() != 1 || !ci->pArgs->GetAt(0)->IsArray() || !ci->pArgs->GetAt(0)->IsByRef())
 	{
-		//there must be two reference to array
-		ci->returnValue->SetBool(false);
+		//there must be one reference to array
+		ci->returnValue->SetUlong(-1);
 	}
 	else
 	{
@@ -473,7 +473,7 @@ PBXRESULT PbniHash::GetEach(PBCallInfo * ci){
 		ci->pArgs->GetAt(1)->IsNull() || !ci->pArgs->GetAt(1)->IsArray() || !ci->pArgs->GetAt(1)->IsByRef())
 	{
 		//there must be two reference to array
-		ci->returnValue->SetBool(false);
+		ci->returnValue->SetUlong(-1);
 	}
 	else
 	{
