@@ -434,28 +434,27 @@ void PbniHash::DoPurge()
 PBXRESULT PbniHash::GetValues(PBCallInfo * ci){
 	PROFILE_FUNC();
 	PBXRESULT pbxr = PBX_OK;
-	if( ci->pArgs->GetCount() != 1 || !ci->pArgs->GetAt(0)->IsArray() || !ci->pArgs->GetAt(0)->IsByRef())
-	{
+	
+	if( ci->pArgs->GetCount() != 1 || !ci->pArgs->GetAt(0)->IsArray() || !ci->pArgs->GetAt(0)->IsByRef()){
 		//there must be one reference to array
 		ci->returnValue->SetUlong(-1);
 	}
-	else
-	{
+	else{
 		pblong dim[1] = {1};						//on peut avoir des tableaux avec plusieurs dimensions
-													//ici on utilise un tableau à 1 dimension, et on commence à 1
-		pbarray values;
+													//ici on utilise un tableau à 1 dimension, et on commence à 1		
 		void *key;
 		PPBDATAREC data;
 		hi_iterator_t *iter;
 		unsigned long keylen;
 		pbulong entries = hi_no_objects(m_hi_handle); 
 		// we always return a new array, it may be empty
-		values = m_pSession->NewUnboundedSimpleArray(pbvalue_any);
-		if(entries>1)
+		pbarray values = ci->pArgs->GetAt(0)->GetArray();	//*/m_pSession->NewUnboundedSimpleArray(pbvalue_any);
+		if(entries>0)
 			m_pSession->SetArrayItemToNull(values, (pblong*)&entries);	//pre allocate array		
 		if(HI_SUCCESS == hi_iterator_create(m_hi_handle, &iter)){ //we can also get HI_ERR_NODATA if empty hash		
 			while(HI_SUCCESS == hi_iterator_getnext(iter, (void**)&data, &key, &keylen)){
-				m_pSession->SetArrayItemValue(values, dim, (IPB_Value *)data->data);
+				IPB_Value* value = (IPB_Value *)data->data;
+				SetArrayItem(values, dim, value);
 				dim[0]++;		//prochain index
 			}
 			hi_iterator_fini(iter);
@@ -463,6 +462,7 @@ PBXRESULT PbniHash::GetValues(PBCallInfo * ci){
 		ci->pArgs->GetAt(0)->SetArray(values);
 		ci->returnValue->SetUlong(entries);
 	}
+	
 	return pbxr;
 }
 PBXRESULT PbniHash::GetEach(PBCallInfo * ci){
@@ -490,7 +490,7 @@ PBXRESULT PbniHash::GetEach(PBCallInfo * ci){
 
 		// we always return a new array, it may be empty
 		keys = m_pSession->NewUnboundedSimpleArray(pbvalue_string);
-		values = m_pSession->NewUnboundedSimpleArray(pbvalue_any);
+		values = ci->pArgs->GetAt(1)->GetArray();// */m_pSession->NewUnboundedSimpleArray(pbvalue_any);
 		
 		if(entries>1){
 			m_pSession->SetArrayItemToNull(keys, (pblong*)&entries);	//pre allocate array		
@@ -509,14 +509,14 @@ PBXRESULT PbniHash::GetEach(PBCallInfo * ci){
 				OutputDebugString(wstr);
 #endif
 				m_pSession->SetStringArrayItem(keys, dim, wstr);
-				m_pSession->SetArrayItemValue(values, dim, (IPB_Value *)data->data);
+				SetArrayItem(values, dim, (IPB_Value *)data->data);
 				dim[0]++;		//prochain index
 				free(wstr);
 			}
 			hi_iterator_fini(iter);
 		}
 		ci->pArgs->GetAt(0)->SetArray(keys);
-		ci->pArgs->GetAt(1)->SetArray(values);
+		//ci->pArgs->GetAt(1)->SetArray(values);
 		ci->returnValue->SetUlong(entries);
 	}
 	return pbxr;
@@ -604,4 +604,79 @@ PBXRESULT PbniHash::OnUnSerialize(PBCallInfo * ci){
 	PBXRESULT pbxr = PBX_OK;
 	//this is just an alias to Serialize
 	return UnSerialize(ci);
+}
+
+void PbniHash::SetArrayItem(pbarray values, pblong * dim, IPB_Value* value){
+	if(value->IsNull()){
+		m_pSession->SetArrayItemToNull(values, dim);
+	}
+	else{
+		pbboolean isnull;
+		IPB_Value* item = m_pSession->GetPBAnyArrayItem(values, dim, isnull);
+		if(value->IsObject()){
+			item->SetObject( value->GetObjectW() );
+		}
+		else if(value->IsArray()){
+			item->SetArray( value->GetArray() );
+		}
+		else if(value->IsEnum()){
+			item->SetUlong( value->GetUlong() );
+		}
+		else {
+			switch(value->GetType()){
+				case pbvalue_any:
+					break;
+				case pbvalue_blob:
+					item->SetBlob( value->GetBlob() );
+					break;
+				case pbvalue_boolean:
+					item->SetBool( value->GetBool() );
+					break;
+#ifdef HAS_PBBYTE
+				case pbvalue_byte:
+					item->SetByte( value->GetByte() );
+					break;
+#endif
+				case pbvalue_char:
+					item->SetChar( value->GetChar()  );
+					break;
+				case pbvalue_date:
+					item->SetDate( value->GetDate()  );
+					break;
+				case pbvalue_datetime:
+					item->SetDateTime( value->GetDateTime()  );
+					break;
+				case pbvalue_dec:
+					item->SetDecimal( value->GetDecimal()  );
+					break;
+				case pbvalue_double:
+					item->SetDouble( value->GetDouble()  );
+					break;
+				case pbvalue_int:
+					item->SetInt( value->GetInt()  );
+					break;
+				case pbvalue_long:
+					item->SetLong( value->GetLong()  );
+					break;
+				case pbvalue_longlong:
+					item->SetLongLong( value->GetLongLong()  );
+					break;
+				case pbvalue_real:
+					item->SetReal( value->GetReal()  );
+					break;
+				case pbvalue_string:
+					item->SetPBString( value->GetString()  );
+					break;
+				case pbvalue_time:
+					item->SetTime( value->GetTime()  );
+					break;
+				case pbvalue_uint:
+					item->SetUint( value->GetUint()  );
+					break;
+				case pbvalue_ulong:
+					item->SetUlong( value->GetUlong()  );
+					break;
+			}
+		}
+	}
 }

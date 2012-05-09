@@ -125,7 +125,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				InlineFunctionExpansion="0"
-				EnableIntrinsicFunctions="true"
+				EnableIntrinsicFunctions="false"
 				FavorSizeOrSpeed="0"
 				WholeProgramOptimization="false"
 				AdditionalIncludeDirectories=".\Shiny\include;.\libhashish;&quot;C:\Program Files\Sybase\PowerBuilder 11.5\SDK\PBNI\include&quot;"

@@ -29,8 +29,8 @@ LANGUAGE LANG_FRENCH, SUBLANG_FRENCH_LUXEMBOURG
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,9,4,0
- PRODUCTVERSION 0,9,4,0
+ FILEVERSION 0,9,5,0
+ PRODUCTVERSION 0,9,5,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -47,12 +47,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "PbniHash is built on the Libhashish opensource hash library. See http://libhashish.sourceforge.net/"
             VALUE "FileDescription", "PbniHash Powerbuilder Extension"
-            VALUE "FileVersion", "0.9.4"
+            VALUE "FileVersion", "0.9.5"
             VALUE "InternalName", "PbniHash"
             VALUE "LegalCopyright", "Copyright © 2008, 2009, 2011, 2012 Sébastien Kirche"
             VALUE "OriginalFilename", "PbniHash.pbx"
             VALUE "ProductName", "PbniHash Powerbuilder Extension for " STRING(PBVM_VERSION)
-            VALUE "ProductVersion", "0.9.4"
+            VALUE "ProductVersion", "0.9.5"
         END
     END
     BLOCK "VarFileInfo"

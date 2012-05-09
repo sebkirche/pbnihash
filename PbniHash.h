@@ -15,6 +15,7 @@ public:
 	PbniHash();
 	PbniHash( IPB_Session * pSession );
 	virtual ~PbniHash();
+	void SetArrayItem(pbarray values, pblong * dim, IPB_Value* value);
 	void ReleaseSessionString(LPCTSTR str){
 #if PBVM_VERSION >=105
 	if(m_pSession && str)
