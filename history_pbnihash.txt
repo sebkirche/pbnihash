@@ -1,17 +1,21 @@
-HISTORY -=- Last edit Time-stamp: <03/07/2011 13:33 Sebastien@PC-DEV>
+HISTORY -=- Last edit Time-stamp: <11/04/2017 01:07 seki@bonemine.seki.fr>
 =======
-2012-05-09 - Fixe of_getkeys / of_geteach by reusing any array from argument
+
+2017-04-10 - Reorganized the project for PB115 in order to produce other versions
+             the .pbx is now pbnihash115.pbx
+
+2012-05-09 - Fix of_getkeys / of_geteach by reusing any array from argument
 
 2012-04-11 - Use in memory buffer rather than temporary files
 
 2012-01-05 - Use Shiny lib to profile code
-			 improve pbserializer by using FILE* rather than HANDLE for file access
-			 
+             improve pbserializer by using FILE* rather than HANDLE for file access
+
 2012-01-02 - Fixe ReleaseString memory leaks
-			 Pre-allocate pbarray before to fill'them'up
-			 Added of_getvalues, of_geteach, of_serialize, of_unserialize
-			 Add Display_hash button and function to demo project
-			 Allow null values as data
+             Pre-allocate pbarray before to fill'them'up
+             Added of_getvalues, of_geteach, of_serialize, of_unserialize
+             Add Display_hash button and function to demo project
+             Allow null values as data
 
 2011-07-03 - Added a script to help the packaging and distrbution
 

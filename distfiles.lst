@@ -11,14 +11,8 @@ pbnihashstr.h
 pbnihash.rc
 pbx2pbd90.bat
 
-pbnihash90.pbd
-pbnihash90.pbx
-pbnihash100.pbd
-pbnihash100.pbx
-pbnihash105.pbd
-pbnihash105.pbx
-pbnihash115.pbd
-pbnihash115.pbx
+pbnihash*.pbd
+pbnihash*.pbx
 
 worksp*.pbw
 hashtest*.pbl
@@ -39,3 +33,4 @@ distfiles.lst
 libhashish
 pb_src
 stuff
+Shiny

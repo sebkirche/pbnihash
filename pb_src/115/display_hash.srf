@@ -1,0 +1,58 @@
+﻿$PBExportHeader$display_hash.srf
+$PBExportComments$debug display uo_hash
+global type display_hash from function_object
+end type
+
+forward prototypes
+global function string display_hash (uo_hash ah_table, long al_level)
+end prototypes
+
+global function string display_hash (uo_hash ah_table, long al_level);//Pretty-print of a uo_hash 
+// Seki - 2009
+//
+// usage : display_hash(uo_hash, 0)
+//
+// the al_level parameter is used internally to lnow when to show the messagebox
+// Hint : you can Ctrl-C when the message box is shown to copy the text of the message
+
+string ls_keys[], ls_msg, ls_class
+any la_val
+uo_hash lh_val
+long i
+
+//TODO : pour les types chaine, sauver en version "chaine pascal" avec une longueur
+
+ah_table.of_getkeys(ls_keys[])
+for i = 1 to upperbound(ls_keys[])
+	if i > 1 then ls_msg += "~r~n"
+	la_val = ah_table.of_get(ls_keys[i])
+	ls_class = classname(la_val)
+	if isnull(ls_class) then ls_class = "null"
+	if ls_class = "uo_hash" or ls_class = "uo_cst_hash" then 
+		//list the number of items
+		lh_val = la_val
+		ls_class += "#" + string(lh_val.of_getcount())
+	end if
+	ls_msg += fill(' ', al_level * 4) + ls_keys[i] + "[" + ls_class + "]" + "="
+	if isnull(la_val) then
+		ls_msg += "(null value)"
+	else	
+		choose case classname(la_val)
+			case "string"
+				ls_msg += string( la_val )	//string( ... ) is a hack for CHAR datatype
+			case "uo_hash", "uo_cst_hash"
+				ls_msg += "~r~n" + display_hash(lh_val, al_level + 1)
+			case else
+				ls_msg += string(la_val)
+		end choose
+	end if
+next
+
+if al_level = 0 then 
+	messagebox("Hash Table content (" + string(ah_table.of_getcount()) + " item[s])", ls_msg)
+end if
+
+return ls_msg
+
+end function
+

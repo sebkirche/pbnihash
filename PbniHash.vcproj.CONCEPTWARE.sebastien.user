@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioUserFile
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	ShowAllFiles="false"
 	>
 	<Configurations>
@@ -11,7 +11,7 @@
 			<DebugSettings
 				Command="&quot;C:\Program Files\Sybase\PowerBuilder 11.5\PB115.EXE&quot;"
 				WorkingDirectory="$(ProjectDir)"
-				CommandArguments="/workspace worksp.pbw"
+				CommandArguments="/workspace worksp115.pbw"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
@@ -39,7 +39,7 @@
 			<DebugSettings
 				Command="&quot;C:\Program Files\Sybase\PowerBuilder 11.5\PB115.EXE&quot;"
 				WorkingDirectory="$(ProjectDir)"
-				CommandArguments="/workspace worksp.pbw"
+				CommandArguments="/workspace worksp115.pbw"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
@@ -51,6 +51,34 @@
 				Environment=""
 				EnvironmentMerge="true"
 				DebuggerFlavor="0"
+				MPIRunCommand=""
+				MPIRunArguments=""
+				MPIRunWorkingDirectory=""
+				ApplicationCommand=""
+				ApplicationArguments=""
+				ShimCommand=""
+				MPIAcceptMode=""
+				MPIAcceptFilter=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release 11.5 (Profiling)|Win32"
+			>
+			<DebugSettings
+				Command=""
+				WorkingDirectory=""
+				CommandArguments=""
+				Attach="false"
+				DebuggerType="3"
+				Remote="1"
+				RemoteMachine="PC-SEBASTIEN"
+				RemoteCommand=""
+				HttpUrl=""
+				PDBPath=""
+				SQLDebugging=""
+				Environment=""
+				EnvironmentMerge="true"
+				DebuggerFlavor=""
 				MPIRunCommand=""
 				MPIRunArguments=""
 				MPIRunWorkingDirectory=""

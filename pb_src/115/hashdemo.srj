@@ -1,0 +1,20 @@
+﻿$PBExportHeader$hashdemo.srj
+EXE:hashdemo115.exe,hashdemo.pbr,0,1,1
+CMP:0,0,0,2,0,0,1
+COM:seki.fr
+DES:PbniHash demo application
+CPY:© 2008-2017 Sébastien Kirche
+PRD:hashdemo
+PVS:1,0,0,1
+PVN:1,0,0,1
+FVS:1,0,0,1
+FVN:1,0,0,1
+MAN:0,asInvoker,0
+PBD:hashdemo115.pbl,,0
+PBD:pbnihash115.pbd,,1
+OBJ:c:\dev\powerbuilder\pbni\pbnihash\hashdemo115.pbl,hashdemo115,a
+OBJ:c:\dev\powerbuilder\pbni\pbnihash\hashdemo115.pbl,str_test,s
+OBJ:c:\dev\powerbuilder\pbni\pbnihash\hashdemo115.pbl,w_test,w
+OBJ:c:\dev\powerbuilder\pbni\pbnihash\pbnihash115.pbd,uo_hash,u
+OBJ:c:\dev\powerbuilder\pbni\pbnihash\hashdemo115.pbl,display_hash,f
+OBJ:c:\dev\powerbuilder\pbni\pbnihash\hashdemo115.pbl,display_blob,f

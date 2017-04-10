@@ -1,0 +1,68 @@
+﻿$PBExportHeader$display_blob.srf
+global type display_blob from function_object
+end type
+
+forward prototypes
+global subroutine display_blob (blob abl_data)
+end prototypes
+
+global subroutine display_blob (blob abl_data);//display blob content in a messagebox : usefull for debuggin.
+char ls_tohex[] = "0123456789ABCDEF"
+char ls_binary[16]
+char ls_line[ 48 /*74 = 1 + 4 + 2 + 3*16 + 1 +16 + 2 */ ]
+char ls_msg[]
+long i, j, length, k, w, spy
+byte b
+string ls_format = "0000"
+if isnull( abl_data ) then
+	messagebox( "Blob display", "Blob is null" )
+	return
+end if
+
+byte lba_data[]
+ls_line = fill( " ", upperbound( ls_line ) )
+length = len( abl_data )
+k = 1
+w = 1
+lba_data[] = GetByteArray( abl_data )
+spy = 0
+long ll_fmt
+ll_fmt = len( string( length / 16 ) )
+if ll_fmt > 4 then
+	ls_format = fill("0", ll_fmt )
+end if
+
+//pre-allocate msg array
+ls_msg[ (70 + ll_fmt) * int( length / 16 ) ] = ''
+for i = 1 to length
+	b = lba_data[i]	//GetByte( abl_data, i, b )
+	ls_line[w] = ls_tohex[ 1+ mod(int(b/16),16) ]
+	w++
+	ls_line[w] = ls_tohex[ 1+ mod(b,16) ]
+	w++
+	w++
+
+	if (b=13 or b=10 or b=9 or b=0) then
+		ls_binary[k] = '.'
+	else
+		ls_binary[k] = char(b)
+	end if
+	k++
+	if mod(i,16) = 0 and i > 0 then
+		spy++
+		ls_msg = ls_msg + "[" + string( i - 16, ls_format) + "] " + ls_line + "~t" + ls_binary + "~r~n"
+//		ls_msg += "[" + string( i - 16, ls_format) + "] " + ls_line + "~t" + ls_binary + "~r~n"
+//		if spy * (70 + ll_fmt) <> len(ls_msg) then
+//			DebugBreak()
+//		end if
+//		ls_line[] = ""
+//		ls_binary = ""
+		k=1
+		w=1
+	end if
+next
+ls_line = ls_line + fill(" 00", 3 * ( 16 - mod(i, 16) ) )
+ls_msg = ls_msg + "[" + string( i - mod(i,16), "0000") + "] " + ls_line + "~t" + ls_binary
+messagebox( "Blob size: " + string( length ) + "=>"+string( len(ls_msg) ) , ls_msg ) 
+end subroutine
+
